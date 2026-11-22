@@ -120,6 +120,17 @@
     }
   });
 
+  // Copy buttons take the artifact id from the visible text next to them
+  // (module cards on the homepage and the header of a module page).
+  document.querySelectorAll('.artifact').forEach(function (a) {
+    var span = a.querySelector('span');
+    var btn = a.querySelector('button');
+    if (!span || !btn) return;
+    var id = span.textContent.trim();
+    btn.setAttribute('aria-label', 'Copy ' + id);
+    btn.addEventListener('click', function () { copy(id, id); });
+  });
+
   // Module catalog
   var list = document.getElementById('module-list');
   if (!list) return;
@@ -139,16 +150,6 @@
     var parts = Array.prototype.map.call(m.querySelectorAll('.cat, h3, p, .artifact span'), function (el) { return el.textContent; });
     parts.push(m.getAttribute('data-tags') || '');
     return parts.join(' ').toLowerCase().replace(/\s+/g, ' ');
-  });
-
-  // Copy buttons take the artifact id from the visible text next to them.
-  modules.forEach(function (m) {
-    var span = m.querySelector('.artifact span');
-    var btn = m.querySelector('.artifact button');
-    if (!span || !btn) return;
-    var id = span.textContent.trim();
-    btn.setAttribute('aria-label', 'Copy ' + id);
-    btn.addEventListener('click', function () { copy(id, id); });
   });
 
   document.querySelectorAll('[data-module-count]').forEach(function (el) {

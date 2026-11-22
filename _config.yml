@@ -1,0 +1,49 @@
+# Site configuration. The module and contributor docs are copied in from
+# wicketstuff/core by scripts/fetch-docs.sh before every build; see
+# .github/workflows/pages.yml.
+title: Wicket Stuff
+url: https://wicketstuff.org
+markdown: kramdown
+plugins:
+  - jekyll-relative-links   # docs link to each other as foo.md, like on GitHub
+relative_links:
+  enabled: true
+kramdown:
+  input: GFM
+  hard_wrap: false
+
+# Modules shown first in the homepage catalog (before "Show all"), by
+# directory name without "-parent". The rest follow alphabetically.
+featured:
+  - select2
+  - wicketstuff-jquery-ui
+  - inmethod-grid
+  - shiro-security
+  - datastores
+  - datatables
+  - tinymce6
+  - wicketstuff-restannotations
+  - wicketstuff-lazymodel
+  - serializer-kryo2
+  - minis
+  - openlayers3
+
+module_categories:
+  ui: Components
+  js: JavaScript libraries
+  data: Data & reporting
+  security: Security
+  web: REST & web
+  infra: Runtime
+  dev: Developer tools
+
+defaults:
+  - scope: { path: "modules" }
+    values: { layout: doc, section: modules }
+  - scope: { path: "contribute" }
+    values: { layout: doc, section: contribute }
+
+exclude:
+  - scripts
+  - README.md
+  - .gitignore

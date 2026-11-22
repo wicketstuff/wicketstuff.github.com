@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% if page.title and page.title != "Home" %}{{ page.title | escape }} · {% endif %}{% if page.url contains '/wicketsecurity/' %}Wicket Security · {% endif %}Wicket Stuff</title>
+  <title>{% if page.title %}{{ page.title | escape }} · {% endif %}Wicket Stuff</title>
+  {% if page.description %}<meta name="description" content="{{ page.description | escape }}">{% endif %}
   <meta name="theme-color" content="#e8590c">
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/assets/site.css">
@@ -34,27 +35,8 @@
   </div>
 </header>
 
-<main id="main" class="wrap doc">
-  <aside class="doc-nav">
-    {% if page.url contains '/wicketsecurity/' %}
-    <nav aria-label="Wicket Security">
-    <p class="doc-nav-title">Wicket Security</p>
-    <ul>
-      {% assign docs = "index.html|Overview,introduction.html|Introduction,gettingstarted.html|Getting started with Swarm,springsecurity.html|Spring Security,license.html|License" | split: "," %}
-      {% for d in docs %}{% assign parts = d | split: "|" %}{% assign href = "/wicketsecurity/" | append: parts[0] %}{% assign alt = href | replace: "index.html", "" %}
-      <li><a href="{{ href }}"{% if page.url == href or page.url == alt %} aria-current="page"{% endif %}>{{ parts[1] }}</a></li>
-      {% endfor %}
-    </ul>
-    </nav>
-    {% endif %}
-    <a class="back" href="/#modules"><span aria-hidden="true">←</span> All Wicket Stuff modules</a>
-  </aside>
-  <article class="prose">
-    {% if page.url contains '/wicketsecurity/' %}
-    <p class="archive-note">These pages document Wicket Security 1.x and are kept for reference. Current releases are published as <code>org.wicketstuff:wicketstuff-security-swarm</code> and managed by the <a href="/#start">Wicket Stuff BOM</a>.</p>
-    {% endif %}
-    {{ content }}
-  </article>
+<main id="main">
+{{ content }}
 </main>
 
 <footer class="site-footer">
@@ -66,7 +48,7 @@
     <nav aria-label="Footer">
       <a href="https://github.com/wicketstuff/core">GitHub</a>
       <a href="https://github.com/wicketstuff/core/discussions">Discussions</a>
-      <a href="https://github.com/wicketstuff/core/wiki">Wiki</a>
+      <a href="/contribute/">Developer docs</a>
       <a href="https://github.com/wicketstuff/core/releases">Releases</a>
       <a href="https://central.sonatype.com/namespace/org.wicketstuff">Maven Central</a>
       <a href="https://wicket.apache.org">Apache Wicket</a>
