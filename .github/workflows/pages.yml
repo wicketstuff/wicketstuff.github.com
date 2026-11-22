@@ -11,9 +11,13 @@ on:
     - cron: "17 4 * * *"
   workflow_dispatch:
     inputs:
-      core_ref:
-        description: "wicketstuff/core branch or tag to take the docs from"
-        default: "wicket-11.x"
+      lts_ref:
+        description: "wicketstuff/core ref for the main (LTS) docs; empty uses releases.lts.branch from _config.yml"
+        default: ""
+        required: false
+      current_ref:
+        description: "wicketstuff/core ref for the current-line docs; empty uses the newest wicket-N.x branch"
+        default: ""
         required: false
 
 permissions:
@@ -33,7 +37,8 @@ jobs:
       - name: Fetch docs from wicketstuff/core
         run: scripts/fetch-docs.sh
         env:
-          CORE_REF: ${{ inputs.core_ref || 'wicket-11.x' }}
+          LTS_REF: ${{ inputs.lts_ref }}
+          CURRENT_REF: ${{ inputs.current_ref }}
       - uses: actions/configure-pages@v6
       - uses: actions/jekyll-build-pages@v1
         with:
