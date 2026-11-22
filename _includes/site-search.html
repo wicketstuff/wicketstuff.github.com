@@ -1,0 +1,32 @@
+{%- comment -%}
+  Site search in the header (homepage and docs layout). The index is built
+  by Pagefind after the Jekyll build (scripts/pagefind.sh); assets/site.js
+  loads /pagefind/pagefind.js on first use. "lts" and "current" are the
+  values of the version filter that _layouts/doc.html puts on module pages.
+{%- endcomment -%}
+{%- assign core = site.data.core -%}
+    <div class="site-search js-only" data-search>
+      <button class="search-toggle" type="button" aria-expanded="false" aria-controls="search-box" aria-label="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      </button>
+      <div class="search-box" id="search-box">
+        <form class="search-form" role="search" action="#">
+          <label class="visually-hidden" for="site-search">Search the documentation</label>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <input type="search" id="site-search" placeholder="Search docs" autocomplete="off" spellcheck="false" aria-controls="search-results" aria-keyshortcuts="/">
+          <kbd aria-hidden="true">/</kbd>
+        </form>
+        <div class="search-results" id="search-results" hidden>
+          {%- if core.current_ref %}
+          <div class="search-scope" role="group" aria-label="Documentation version">
+            <button type="button" data-scope="lts" aria-pressed="true">{{ core.lts_label }} LTS <span class="n"></span></button>
+            <button type="button" data-scope="current" aria-pressed="false">{{ core.current_label }} <span class="n"></span></button>
+          </div>
+          {%- endif %}
+          <p class="search-summary" data-lts="{{ core.lts_label }} LTS docs" data-current="{{ core.current_label }} docs"></p>
+          <ol class="search-list" aria-label="Search results"></ol>
+          <button class="search-more btn btn-ghost" type="button" hidden>More results</button>
+        </div>
+        <p class="visually-hidden search-live" role="status" aria-live="polite"></p>
+      </div>
+    </div>

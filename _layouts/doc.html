@@ -9,6 +9,10 @@ layout: default
   In a module folder, index.md carries the module front matter; other pages
   are extra pages of that module. fetch-docs.sh adds source_ref and
   source_path to every page for the Source and Edit links.
+  The data-pagefind-* attributes control the site search (scripts/pagefind.sh):
+  the article is indexed, module pages get a version filter (lts or current,
+  see _includes/site-search.html) and every page a "section" label for the
+  results.
 {%- endcomment -%}
 {%- assign core = site.data.core -%}
 {%- assign siblings = site.pages | where: "dir", page.dir | sort: "title" -%}
@@ -30,6 +34,14 @@ layout: default
 {%- endif -%}
 {%- assign lts_page = site.pages | where: "url", lts_url | first -%}
 {%- assign current_page = site.pages | where: "url", current_url | first -%}
+{%- comment -%} Shown above the page title in search results. {%- endcomment -%}
+{%- if page.section == "contribute" -%}
+  {%- assign search_section = "Developer docs" -%}
+{%- elsif page.name == "index.md" -%}
+  {%- assign search_section = site.module_categories[page.category] | default: "Module" -%}
+{%- else -%}
+  {%- assign search_section = index.title -%}
+{%- endif -%}
 <div class="wrap doc">
   <aside class="doc-nav">
     {%- if siblings.size > 1 %}
@@ -49,7 +61,7 @@ layout: default
     <a class="back" href="/#modules"><span aria-hidden="true">←</span> All Wicket Stuff modules</a>
     {%- endif %}
   </aside>
-  <article class="prose">
+  <article class="prose" data-pagefind-body{% if is_module %} data-pagefind-filter="version:{% if page.section == "current" %}current{% else %}lts{% endif %}"{% endif %} data-pagefind-meta="section:{{ search_section | escape }}">
     {%- if is_module and core.current_ref and lts_page and current_page %}
     <nav class="version-switch" aria-label="Documentation version">
       <a href="{{ lts_url }}"{% if page.section == "modules" %} aria-current="page"{% endif %}>{{ core.lts_label }} LTS</a>
@@ -57,10 +69,10 @@ layout: default
     </nav>
     {%- endif %}
     {%- if page.section == "current" %}
-    <p class="version-note">You're reading the documentation for Wicket Stuff {{ core.current_label }}, the current feature line.{% if lts_page %} The <a href="{{ lts_url }}">{{ core.lts_label }} long-term support documentation</a> is the default.{% endif %}</p>
+    <p class="version-note" data-pagefind-ignore>You're reading the documentation for Wicket Stuff {{ core.current_label }}, the current feature line.{% if lts_page %} The <a href="{{ lts_url }}">{{ core.lts_label }} long-term support documentation</a> is the default.{% endif %}</p>
     {%- endif %}
     {%- if is_module and page.name == "index.md" %}
-    <p class="doc-kicker">{{ site.module_categories[page.category] | default: "Module" | escape }}</p>
+    <p class="doc-kicker" data-pagefind-ignore>{{ site.module_categories[page.category] | default: "Module" | escape }}</p>
     {%- endif %}
     {%- assign opening = content | strip | slice: 0, 3 %}
     {%- unless opening == "<h1" %}
@@ -69,11 +81,11 @@ layout: default
     <div class="doc-meta">
       {%- if is_module and page.name == "index.md" %}
       {%- if page.artifactId %}
-      <div class="artifact"><span>{{ page.artifactId }}</span><button class="js-only" type="button">Copy</button></div>
+      <div class="artifact"><span>{{ page.artifactId }}</span><button class="js-only" type="button" data-pagefind-ignore>Copy</button></div>
       {%- endif %}
-      <a href="https://github.com/wicketstuff/core/tree/{{ page.source_ref }}/{{ page.source_path | split: "/docs/" | first }}">Source</a>
+      <a href="https://github.com/wicketstuff/core/tree/{{ page.source_ref }}/{{ page.source_path | split: "/docs/" | first }}" data-pagefind-ignore>Source</a>
       {%- endif %}
-      <a href="https://github.com/wicketstuff/core/edit/{{ page.source_ref }}/{{ page.source_path }}">Edit this page</a>
+      <a href="https://github.com/wicketstuff/core/edit/{{ page.source_ref }}/{{ page.source_path }}" data-pagefind-ignore>Edit this page</a>
     </div>
     {{ content }}
   </article>

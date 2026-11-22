@@ -4,7 +4,7 @@
         <h3>{{ m.title | escape }}</h3>
         <p>{{ m.description | escape }}</p>
         {%- if m.artifactId %}
-        <div class="artifact"><span>{{ m.artifactId }}</span><button class="js-only" type="button">Copy</button></div>
+        <div class="artifact"><span>{{ m.artifactId }}</span><button class="js-only" type="button" data-pagefind-ignore>Copy</button></div>
         {%- endif %}
-        <div class="links"><a href="{{ m.url }}">Docs</a><a href="https://github.com/wicketstuff/core/tree/{{ m.source_ref }}/{{ m.source_path | split: "/docs/" | first }}">Source</a></div>
+        <div class="links" data-pagefind-ignore><a href="{{ m.url }}">Docs</a><a href="https://github.com/wicketstuff/core/tree/{{ m.source_ref }}/{{ m.source_path | split: "/docs/" | first }}">Source</a></div>
       </article>

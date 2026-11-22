@@ -87,8 +87,13 @@
   // Mobile menu
   var menuBtn = document.querySelector('.menu-btn');
   var nav = document.getElementById('nav');
+  var closeSearch = function () {};
+  function closeMenu() {
+    if (menuBtn && nav) { nav.classList.remove('open'); menuBtn.setAttribute('aria-expanded', 'false'); }
+  }
   if (menuBtn && nav) {
     var setOpen = function (open) {
+      if (open) closeSearch();
       nav.classList.toggle('open', open);
       menuBtn.setAttribute('aria-expanded', String(open));
     };
@@ -100,6 +105,243 @@
     document.addEventListener('click', function (e) {
       if (nav.classList.contains('open') && !e.target.closest('.site-header')) setOpen(false);
     });
+  }
+
+  // Site search. The Pagefind index (/pagefind/) is built after Jekyll by
+  // scripts/pagefind.sh; its script is loaded on first use. Module pages
+  // carry a version filter ("lts" or "current"); a search shows one line at
+  // a time, so a page never appears twice, and pages without the filter
+  // (developer docs, homepage) appear in both.
+  var searchRoot = document.querySelector('[data-search]');
+  if (searchRoot) closeSearch = initSearch(searchRoot) || closeSearch;
+
+  function initSearch(root) {
+    var SEARCH_COMPACT = window.matchMedia('(max-width: 1099px)'); // as in site.css
+    var PAGE = 8;
+    var toggle = root.querySelector('.search-toggle');
+    var form = root.querySelector('form');
+    var input = root.querySelector('input');
+    var panel = root.querySelector('.search-results');
+    var list = panel.querySelector('.search-list');
+    var summary = panel.querySelector('.search-summary');
+    var more = panel.querySelector('.search-more');
+    var live = root.querySelector('.search-live');
+    var scopeBtns = Array.prototype.slice.call(panel.querySelectorAll('[data-scope]'));
+    var scope = scopeBtns.length && location.pathname.indexOf('/current/') === 0 ? 'current' : 'lts';
+    var filters = { lts: { version: { none: ['current'] } }, current: { version: { none: ['lts'] } } };
+    var pagefind = null;
+    var seq = 0, results = [], shown = 0, inputTimer, liveTimer;
+
+    function load() {
+      if (!pagefind) {
+        pagefind = import('/pagefind/pagefind.js').then(function (pf) {
+          return pf.options({ excerptLength: 22 }).then(function () { return pf; });
+        });
+        pagefind.catch(function () { pagefind = null; });
+      }
+      return pagefind;
+    }
+
+    function isOpen() { return root.classList.contains('open'); }
+    function setOpen(open) {
+      root.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      if (open) closeMenu();
+    }
+    function hideResults() { panel.hidden = true; }
+    // Closes the results (and on small screens the panel). Focus returns to
+    // the field, or to the toggle when the field disappears.
+    function close(focus) {
+      hideResults();
+      if (SEARCH_COMPACT.matches && isOpen()) {
+        setOpen(false);
+        if (focus) toggle.focus();
+      } else if (focus) {
+        input.focus();
+      }
+    }
+
+    function announce(msg) {
+      clearTimeout(liveTimer);
+      live.textContent = '';
+      liveTimer = setTimeout(function () { live.textContent = msg; }, 500);
+    }
+    function label(sc) { return summary.getAttribute('data-' + sc); }
+
+    function run() {
+      var q = input.value.trim();
+      var my = ++seq;
+      if (!q) { hideResults(); list.textContent = ''; return; }
+      load().then(function (pf) {
+        var other = scope === 'lts' ? 'current' : 'lts';
+        return Promise.all([
+          pf.search(q, scopeBtns.length ? { filters: filters[scope] } : {}),
+          scopeBtns.length ? pf.search(q, { filters: filters[other] }) : null
+        ]).then(function (r) {
+          if (my !== seq) return;
+          results = r[0] ? r[0].results : [];
+          scopeBtns.forEach(function (b) {
+            var n = b.getAttribute('data-scope') === scope ? results.length : (r[1] ? r[1].results.length : 0);
+            b.querySelector('.n').textContent = '(' + n + ')';
+            b.setAttribute('aria-label', b.firstChild.textContent.trim() + ', ' + n + (n === 1 ? ' result' : ' results'));
+          });
+          shown = 0;
+          list.textContent = '';
+          var where = scopeBtns.length ? ' in the ' + label(scope) : '';
+          if (!results.length) {
+            var elsewhere = r[1] && r[1].results.length;
+            summary.textContent = 'No results for “' + q + '”' + where + '.' +
+              (elsewhere ? ' The ' + label(scope === 'lts' ? 'current' : 'lts') + ' have ' + elsewhere + '.' : '');
+          } else {
+            summary.textContent = results.length + (results.length === 1 ? ' result' : ' results') + where;
+          }
+          panel.hidden = false;
+          announce(summary.textContent);
+          return showMore(my, false);
+        });
+      }).catch(function () {
+        if (my !== seq) return;
+        list.textContent = '';
+        summary.textContent = 'Search is not available here. It needs the Pagefind index, which the site build creates.';
+        more.hidden = true;
+        panel.hidden = false;
+        announce(summary.textContent);
+      });
+    }
+
+    function showMore(my, focusFirst) {
+      var batch = results.slice(shown, shown + PAGE);
+      shown += batch.length;
+      more.hidden = true;
+      return Promise.all(batch.map(function (r) { return r.data(); })).then(function (data) {
+        if (my !== seq) return;
+        var first = null;
+        data.forEach(function (d) {
+          var li = render(d);
+          first = first || li.querySelector('a');
+          list.appendChild(li);
+        });
+        more.hidden = shown >= results.length;
+        if (focusFirst && first) first.focus();
+      });
+    }
+
+    function el(tag, cls, text) {
+      var e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (text) e.textContent = text;
+      return e;
+    }
+    function excerpt(html) {
+      // Pagefind escapes the page text and only adds <mark> around hits.
+      var p = el('p', 'sr-excerpt');
+      p.innerHTML = html;
+      return p;
+    }
+    // A result: the page link (section label and title), then the sections
+    // of the page with hits (headings with an id), best first. Hits before
+    // the first such heading belong to the page itself. The excerpts are
+    // outside the links so a link's name is just its title.
+    function render(d) {
+      var li = el('li');
+      var page = el('a', 'sr-page');
+      page.href = d.url;
+      if (d.meta.section) page.appendChild(el('span', 'sr-where', d.meta.section));
+      page.appendChild(el('span', 'sr-title', d.meta.title || d.url));
+      li.appendChild(page);
+      var subs = (d.sub_results || []).slice().sort(function (a, b) {
+        return b.locations.length - a.locations.length;
+      }).slice(0, 3);
+      var top = subs.filter(function (s) { return !s.anchor; })[0];
+      if (top || !subs.length) li.appendChild(excerpt(top ? top.excerpt : d.excerpt));
+      subs.forEach(function (s) {
+        if (!s.anchor) return;
+        var div = el('div', 'sr-sub');
+        var a = el('a');
+        a.href = s.url;
+        a.textContent = s.title;
+        div.appendChild(a);
+        div.appendChild(excerpt(s.excerpt));
+        li.appendChild(div);
+      });
+      return li;
+    }
+
+    function links() { return Array.prototype.slice.call(list.querySelectorAll('a')); }
+
+    input.addEventListener('focus', function () {
+      load().catch(function () { /* reported when searching */ });
+      if (input.value.trim() && list.childNodes.length) panel.hidden = false;
+    });
+    input.addEventListener('input', function () {
+      clearTimeout(inputTimer);
+      inputTimer = setTimeout(run, 120);
+    });
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var first = links()[0];
+      if (first && !panel.hidden) location.href = first.href;
+    });
+    root.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        if (!panel.hidden || (SEARCH_COMPACT.matches && isOpen())) {
+          e.preventDefault();
+          e.stopPropagation();
+          close(true);
+        }
+        return;
+      }
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      var all = links();
+      var i = all.indexOf(document.activeElement);
+      if (e.target === input) {
+        if (e.key !== 'ArrowDown' || !all.length || panel.hidden) return;
+        e.preventDefault();
+        all[0].focus();
+      } else if (i !== -1) {
+        e.preventDefault();
+        if (e.key === 'ArrowDown') { if (all[i + 1]) all[i + 1].focus(); }
+        else if (i > 0) all[i - 1].focus();
+        else input.focus();
+      }
+    });
+    scopeBtns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        scope = b.getAttribute('data-scope');
+        scopeBtns.forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+        run();
+      });
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-scope') === scope));
+    });
+    more.addEventListener('click', function () { showMore(seq, true); });
+    // A result on the current page only changes the hash; close the search.
+    list.addEventListener('click', function (e) {
+      if (e.target.closest('a')) { hideResults(); if (isOpen()) setOpen(false); }
+    });
+    toggle.addEventListener('click', function () {
+      if (isOpen()) { close(false); return; }
+      setOpen(true);
+      input.focus();
+    });
+    // Close when the visitor clicks or tabs away from the search.
+    document.addEventListener('click', function (e) {
+      if (!root.contains(e.target)) { hideResults(); if (isOpen()) setOpen(false); }
+    });
+    root.addEventListener('focusout', function (e) {
+      if (e.relatedTarget && !root.contains(e.relatedTarget)) { hideResults(); if (isOpen()) setOpen(false); }
+    });
+    // "/" focuses the search field, unless the visitor is typing elsewhere.
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey || e.defaultPrevented) return;
+      var t = e.target;
+      if (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+      e.preventDefault();
+      if (SEARCH_COMPACT.matches) setOpen(true);
+      input.focus();
+    });
+    SEARCH_COMPACT.addEventListener('change', function () { if (!SEARCH_COMPACT.matches && isOpen()) setOpen(false); });
+
+    return function () { hideResults(); if (isOpen()) setOpen(false); };
   }
 
   // Code card tabs (WAI-ARIA tabs pattern) + copy
