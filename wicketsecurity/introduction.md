@@ -91,7 +91,7 @@ More information
 
  * [Get started with Swarm](gettingstarted.html)
 
- * [Integrate with Spring Security]()
+ * [Integrate with Spring Security](springsecurity.html)
 
  * Examples are available here
 

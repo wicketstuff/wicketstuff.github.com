@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if page.title and page.title != "Home" %}{{ page.title | escape }} · {% endif %}{% if page.url contains '/wicketsecurity/' %}Wicket Security · {% endif %}Wicket Stuff</title>
+  <meta name="theme-color" content="#e8590c">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/site.css">
+  <script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/">
+      <img src="/assets/favicon.svg" alt="" width="30" height="30">
+      Wicket Stuff
+    </a>
+    <button class="menu-btn js-only" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="nav" id="nav" aria-label="Main">
+      <a href="/#modules">Modules</a>
+      <a href="/#start">Get started</a>
+      <a href="/#versions">Versions</a>
+      <a href="/#help">Help</a>
+      <a href="/#contribute">Contribute</a>
+      <a class="gh" href="https://github.com/wicketstuff/core">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap doc">
+  <aside class="doc-nav">
+    {% if page.url contains '/wicketsecurity/' %}
+    <nav aria-label="Wicket Security">
+    <p class="doc-nav-title">Wicket Security</p>
+    <ul>
+      {% assign docs = "index.html|Overview,introduction.html|Introduction,gettingstarted.html|Getting started with Swarm,springsecurity.html|Spring Security,license.html|License" | split: "," %}
+      {% for d in docs %}{% assign parts = d | split: "|" %}{% assign href = "/wicketsecurity/" | append: parts[0] %}{% assign alt = href | replace: "index.html", "" %}
+      <li><a href="{{ href }}"{% if page.url == href or page.url == alt %} aria-current="page"{% endif %}>{{ parts[1] }}</a></li>
+      {% endfor %}
+    </ul>
+    </nav>
+    {% endif %}
+    <a class="back" href="/#modules"><span aria-hidden="true">←</span> All Wicket Stuff modules</a>
+  </aside>
+  <article class="prose">
+    {% if page.url contains '/wicketsecurity/' %}
+    <p class="archive-note">These pages document Wicket Security 1.x and are kept for reference. Current releases are published as <code>org.wicketstuff:wicketstuff-security-swarm</code> and managed by the <a href="/#start">Wicket Stuff BOM</a>.</p>
+    {% endif %}
+    {{ content }}
+  </article>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <p>&copy; Wicket Stuff committers. Wicket Stuff code is mostly licensed under the Apache License, Version 2.0. Integrations depend on third-party libraries and services with their own licenses and terms; check them before you ship.</p>
+      <p>Wicket Stuff is a community project and is not part of the Apache Software Foundation. Apache®, Apache Wicket, and the orange Wicket logo are either registered trademarks or trademarks of the Apache Software Foundation in the United States and/or other countries.</p>
+    </div>
+    <nav aria-label="Footer">
+      <a href="https://github.com/wicketstuff/core">GitHub</a>
+      <a href="https://github.com/wicketstuff/core/discussions">Discussions</a>
+      <a href="https://github.com/wicketstuff/core/wiki">Wiki</a>
+      <a href="https://github.com/wicketstuff/core/releases">Releases</a>
+      <a href="https://central.sonatype.com/namespace/org.wicketstuff">Maven Central</a>
+      <a href="https://wicket.apache.org">Apache Wicket</a>
+    </nav>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="/assets/site.js"></script>
+</body>
+</html>
