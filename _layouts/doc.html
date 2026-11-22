@@ -9,6 +9,10 @@ layout: default
   In a module folder, index.md carries the module front matter; other pages
   are extra pages of that module. fetch-docs.sh adds source_ref and
   source_path to every page for the Source and Edit links.
+  modules/<name>/ normally holds the LTS docs; a module that is only on the
+  current branch gets its current docs there (source_ref is then not the LTS
+  ref), and a removed module its docs/removed/<name>/ docs, whose index.md
+  has removed_in, last_release and optionally replacement.
 {%- endcomment -%}
 {%- assign core = site.data.core -%}
 {%- assign siblings = site.pages | where: "dir", page.dir | sort: "title" -%}
@@ -30,6 +34,12 @@ layout: default
 {%- endif -%}
 {%- assign lts_page = site.pages | where: "url", lts_url | first -%}
 {%- assign current_page = site.pages | where: "url", current_url | first -%}
+{%- comment -%} Only a page copied from the LTS branch counts as the LTS version. {%- endcomment -%}
+{%- if lts_page and lts_page.source_ref != core.lts_ref %}{% assign lts_page = nil %}{% endif -%}
+{%- assign removed = nil -%}
+{%- if page.section == "modules" and index.removed_in %}{% assign removed = index %}{% endif -%}
+{%- assign current_only = false -%}
+{%- if page.section == "modules" and removed == nil and core.current_ref and page.source_ref == core.current_ref %}{% assign current_only = true %}{% endif -%}
 <div class="wrap doc">
   <aside class="doc-nav">
     {%- if siblings.size > 1 %}
@@ -56,6 +66,18 @@ layout: default
       <a href="{{ current_url }}"{% if page.section == "current" %} aria-current="page"{% endif %}>{{ core.current_label }}</a>
     </nav>
     {%- endif %}
+    {%- if removed %}
+    {%- assign removed_major = removed.removed_in | split: "." | first -%}
+    {%- assign removed_line_url = "/versions/" | append: removed_major | append: "/" -%}
+    {%- assign removed_line = site.pages | where: "url", removed_line_url | first %}
+    <div class="removed-note" role="note">
+      <p><strong>This module was removed</strong> in Wicket Stuff {% if removed_line %}<a href="{{ removed_line.url }}">{{ removed.removed_in }}</a>{% else %}{{ removed.removed_in }}{% endif %}.
+        {%- if removed.last_release %} The last release that has it is <a href="https://github.com/wicketstuff/core/releases/tag/wicketstuff-core-{{ removed.last_release }}">{{ removed.last_release }}</a>.{% endif %}
+        {%- if removed.replacement %} Use {% include replacement.html value=removed.replacement %} instead.{% endif %} This documentation stays for projects that still use an older version.</p>
+    </div>
+    {%- elsif current_only %}
+    <p class="version-note">This module is new in Wicket Stuff {{ core.current_label }}, the current feature line. The {{ core.lts_label }} long-term support line doesn't have it.</p>
+    {%- endif %}
     {%- if page.section == "current" %}
     <p class="version-note">You're reading the documentation for Wicket Stuff {{ core.current_label }}, the current feature line.{% if lts_page %} The <a href="{{ lts_url }}">{{ core.lts_label }} long-term support documentation</a> is the default.{% endif %}</p>
     {%- endif %}
@@ -71,10 +93,13 @@ layout: default
       {%- if page.artifactId %}
       <div class="artifact"><span>{{ page.artifactId }}</span><button class="js-only" type="button">Copy</button></div>
       {%- endif %}
+      {%- unless removed %}
       <a href="https://github.com/wicketstuff/core/tree/{{ page.source_ref }}/{{ page.source_path | split: "/docs/" | first }}">Source</a>
+      {%- endunless %}
       {%- endif %}
       <a href="https://github.com/wicketstuff/core/edit/{{ page.source_ref }}/{{ page.source_path }}">Edit this page</a>
     </div>
+    {%- if is_module and page.name == "index.md" %}{% include availability.html id=page.artifactId %}{% endif %}
     {{ content }}
   </article>
 </div>

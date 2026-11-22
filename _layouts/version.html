@@ -1,0 +1,139 @@
+---
+layout: default
+---
+{%- comment -%}
+  Page for one release line, /versions/<wicket>/. The stub pages are written
+  by scripts/release-lines.sh with front matter wicket (the Wicket major) and
+  previous (the line before it); everything else comes from "releases" in
+  _config.yml and the BOM data in _data/availability.yml.
+{%- endcomment -%}
+{%- assign rel = site.releases -%}
+{%- assign avail = site.data.availability -%}
+{%- include release-line.html wicket=page.wicket -%}
+{%- assign r = line -%}
+{%- assign status = line_status -%}
+{%- assign label = line_label -%}
+{%- include release-line.html wicket=page.previous -%}
+{%- assign prev = line -%}
+{%- assign prev_label = line_label -%}
+{%- assign has_bom = true %}{% if r.bom == false %}{% assign has_bom = false %}{% endif -%}
+{%- assign line_list = "" | split: "" | push: rel.lts | push: rel.current | concat: rel.ended -%}
+<div class="wrap doc">
+  <aside class="doc-nav">
+    <nav aria-label="Release lines">
+      <p class="doc-nav-title">Release lines</p>
+      <ul>
+        {%- for l in line_list %}
+        <li><a href="/versions/{{ l.wicket }}/"{% if l.wicket == page.wicket %} aria-current="page"{% endif %}>{{ l.wicket }}.x{% if l.wicket == rel.lts.wicket %} LTS{% endif %}</a></li>
+        {%- endfor %}
+      </ul>
+    </nav>
+    <a class="back" href="/#versions"><span aria-hidden="true">←</span> All versions</a>
+  </aside>
+  <article class="prose release">
+    <p class="doc-kicker">Release line</p>
+    <h1>Wicket Stuff {{ r.wicket }}.x
+      {%- if status == "lts" %} <span class="badge badge-lts">LTS</span>
+      {%- elsif status == "current" %} <span class="badge badge-new">Current</span>
+      {%- else %} <span class="badge badge-maint">End of life</span>{% endif %}</h1>
+    <p class="lead">
+      {%- if status == "lts" -%}
+      The long-term support line for Apache Wicket {{ r.wicket }}. It gets security fixes and applicable bug fixes until Wicket Stuff {{ r.until_release }} ships in {{ r.supported_until }}, and it is the default for the snippets and documentation on this site.
+      {%- elsif status == "current" -%}
+      The current feature line, for Apache Wicket {{ r.wicket }}. It gets fixes until Wicket Stuff {{ r.until_release }} supersedes it in {{ r.supported_until }}.
+      {%- else -%}
+      The line for Apache Wicket {{ r.wicket }}. It reached end of life in {{ r.ended }} and gets no more releases; {{ r.version }} is the final release.
+      {%- endif -%}
+    </p>
+
+    <table class="facts">
+      <tbody>
+        <tr><th scope="row">Status</th><td>
+          {%- if status == "lts" %}Long-term support, until {{ r.until_release }} ({{ r.supported_until }})
+          {%- elsif status == "current" %}Supported, until {{ r.until_release }} ({{ r.supported_until }})
+          {%- else %}End of life since {{ r.ended }}{% endif %}</td></tr>
+        <tr><th scope="row">{% if status == "ended" %}Final release{% else %}Latest release{% endif %}</th><td><a href="https://github.com/wicketstuff/core/releases/tag/wicketstuff-core-{{ r.version }}">{{ r.version }}</a></td></tr>
+        <tr><th scope="row">Apache Wicket</th><td>{{ r.wicket }}.x</td></tr>
+        <tr><th scope="row">Java</th><td>{{ r.java }} or newer</td></tr>
+        <tr><th scope="row">Servlet API</th><td>{{ r.servlet }}</td></tr>
+        <tr><th scope="row">Branch</th><td><a href="https://github.com/wicketstuff/core/tree/{{ r.branch }}"><code>{{ r.branch }}</code></a></td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="use">Use it</h2>
+    {%- if has_bom %}
+    <p>Import the BOM and declare the modules you need without a version.</p>
+    <div class="code-card" data-tabs>
+      <div class="bar">
+        <i></i><i></i><i></i>
+        <div class="tabs js-only" role="tablist" aria-label="Build file">
+          <button class="tab" type="button" role="tab" aria-selected="true" aria-controls="bom-maven" id="tab-bom-maven">pom.xml</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="bom-gradle" id="tab-bom-gradle" tabindex="-1">build.gradle.kts</button>
+        </div>
+        <button class="copy js-only" type="button" data-copy-panel>Copy</button>
+      </div>
+<pre id="bom-maven" data-tabpanel aria-labelledby="tab-bom-maven"><code><span class="t-tag">&lt;dependencyManagement&gt;</span>
+  <span class="t-tag">&lt;dependencies&gt;</span>
+    <span class="t-tag">&lt;dependency&gt;</span>
+      <span class="t-tag">&lt;groupId&gt;</span>org.wicketstuff<span class="t-tag">&lt;/groupId&gt;</span>
+      <span class="t-tag">&lt;artifactId&gt;</span>wicketstuff-bom<span class="t-tag">&lt;/artifactId&gt;</span>
+      <span class="t-tag">&lt;version&gt;</span><span class="t-str">{{ r.version }}</span><span class="t-tag">&lt;/version&gt;</span>
+      <span class="t-tag">&lt;type&gt;</span>pom<span class="t-tag">&lt;/type&gt;</span>
+      <span class="t-tag">&lt;scope&gt;</span>import<span class="t-tag">&lt;/scope&gt;</span>
+    <span class="t-tag">&lt;/dependency&gt;</span>
+  <span class="t-tag">&lt;/dependencies&gt;</span>
+<span class="t-tag">&lt;/dependencyManagement&gt;</span></code></pre>
+<pre id="bom-gradle" data-tabpanel aria-labelledby="tab-bom-gradle"><code><span class="t-tag">dependencies</span> {
+    implementation(platform(<span class="t-str">"org.wicketstuff:wicketstuff-bom:{{ r.version }}"</span>))
+}</code></pre>
+    </div>
+    {%- else %}
+    <p>{{ r.wicket }}.x has no BOM. Give every Wicket Stuff dependency the version <code>{{ r.version }}</code>:</p>
+<pre><code><span class="t-tag">&lt;dependency&gt;</span>
+  <span class="t-tag">&lt;groupId&gt;</span>org.wicketstuff<span class="t-tag">&lt;/groupId&gt;</span>
+  <span class="t-tag">&lt;artifactId&gt;</span>wicketstuff-select2<span class="t-tag">&lt;/artifactId&gt;</span>
+  <span class="t-tag">&lt;version&gt;</span><span class="t-str">{{ r.version }}</span><span class="t-tag">&lt;/version&gt;</span>
+<span class="t-tag">&lt;/dependency&gt;</span></code></pre>
+    {%- endif %}
+
+    <h2 id="modules">Modules</h2>
+    {%- if avail.lines contains r.wicket %}
+    {%- assign total = 0 %}{% assign added = "" | split: "" %}{% assign removed = "" | split: "" -%}
+    {%- assign compare = false %}{% if prev and avail.lines contains prev.wicket %}{% assign compare = true %}{% endif -%}
+    {%- for a in avail.artifacts -%}
+      {%- assign here = false %}{% if a[1] contains r.wicket %}{% assign here = true %}{% assign total = total | plus: 1 %}{% endif -%}
+      {%- if compare -%}
+        {%- assign there = false %}{% if a[1] contains prev.wicket %}{% assign there = true %}{% endif -%}
+        {%- if here and there == false %}{% assign added = added | push: a[0] %}{% endif -%}
+        {%- if there and here == false %}{% assign removed = removed | push: a[0] %}{% endif -%}
+      {%- endif -%}
+    {%- endfor %}
+    <p>The {{ r.version }} BOM manages {{ total }} artifacts.
+      {%- if compare %}
+        {%- if added.size == 0 and removed.size == 0 %} It has the same artifacts as <a href="/versions/{{ prev.wicket }}/">{{ prev_label }}</a>.
+        {%- else %} Compared to <a href="/versions/{{ prev.wicket }}/">{{ prev_label }}</a>:{% endif %}
+      {%- elsif prev and prev.bom == false %} {{ prev_label }} has no BOM, so there is no comparison with it.
+      {%- elsif prev %} The BOM data for {{ prev_label }} isn't available, so there is no comparison with it.
+      {%- endif %}</p>
+    {%- if added.size > 0 %}
+    <h3>Added in {{ label }}</h3>
+    <ul class="artifact-list">
+      {%- for id in added %}<li>{% include artifact-link.html id=id %}</li>{% endfor %}
+    </ul>
+    {%- endif %}
+    {%- if removed.size > 0 %}
+    <h3>Removed in {{ label }}</h3>
+    <ul class="artifact-list">
+      {%- for id in removed %}<li>{% include artifact-link.html id=id %}</li>{% endfor %}
+    </ul>
+    {%- endif %}
+    {%- elsif has_bom %}
+    <p>The module list for this line isn't available right now. The <a href="https://repo1.maven.org/maven2/org/wicketstuff/wicketstuff-bom/{{ r.version }}/">wicketstuff-bom {{ r.version }}</a> pom on Maven Central lists them.</p>
+    {%- else %}
+    <p>Without a BOM there is no module list for this line here. Its modules are on <a href="https://central.sonatype.com/namespace/org.wicketstuff">Maven Central</a> under <code>org.wicketstuff</code>, and in the <a href="https://github.com/wicketstuff/core/tree/{{ r.branch }}"><code>{{ r.branch }}</code></a> branch.</p>
+    {%- endif %}
+
+    <h2 id="releases">Releases</h2>
+    <p>The release notes for every version are on the <a href="https://github.com/wicketstuff/core/releases">GitHub releases page</a>; the notes for {{ r.version }} are under <a href="https://github.com/wicketstuff/core/releases/tag/wicketstuff-core-{{ r.version }}">wicketstuff-core-{{ r.version }}</a>. Apache Wicket publishes the support schedule of its lines on <a href="https://wicket.apache.org/versions/">wicket.apache.org</a>.</p>
+  </article>
+</div>

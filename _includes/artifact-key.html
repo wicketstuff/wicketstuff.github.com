@@ -1,0 +1,6 @@
+{%- comment -%}
+  Sets artifact_key to the groupId:artifactId for a module's artifactId front
+  matter, which is either groupId:artifactId or an artifactId in org.wicketstuff.
+{%- endcomment -%}
+{%- assign artifact_key = include.id | strip -%}
+{%- unless artifact_key contains ":" %}{% assign artifact_key = "org.wicketstuff:" | append: artifact_key %}{% endunless -%}

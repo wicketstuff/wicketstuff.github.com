@@ -1,6 +1,7 @@
 {%- assign m = include.module -%}
       <article class="module" data-cat="{{ m.category }}" data-tags="{{ m.tags | escape }}">
-        <div class="cat">{{ site.module_categories[m.category] | escape }}</div>
+        <div class="cat">{{ site.module_categories[m.category] | escape }}
+          {%- if site.data.core.current_ref and m.source_ref == site.data.core.current_ref %} · {{ site.data.core.current_label }} only{% endif %}</div>
         <h3>{{ m.title | escape }}</h3>
         <p>{{ m.description | escape }}</p>
         {%- if m.artifactId %}

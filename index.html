@@ -10,17 +10,22 @@
   (colors are variables at the top), assets/site.js the behavior.
   _layouts/default.html is the Jekyll layout for the wicketsecurity/ docs.
 
-  Release versions live under "releases" in _config.yml: the long-term
-  support line (the default in snippets and docs) and the current feature
-  line. Update them on every release. Only the end-of-life 9.x row of the
-  version table is written out here.
+  Release lines live under "releases" in _config.yml: the long-term support
+  line (the default in snippets and docs), the current feature line and the
+  ended lines. The version table and the pages /versions/<wicket>/ are
+  generated from them (scripts/release-lines.sh). Per release, update the
+  version there; when a line starts or ends, move it as the comment in
+  _config.yml describes. The hero stats and the 9.x notes in the text below
+  are written out by hand.
 
   The module catalog is generated. Each module in wicketstuff/core has a
   docs/index.md whose front matter (title, category, description,
   artifactId, tags) becomes a card here and whose body becomes the page
   /modules/<name>/. scripts/fetch-docs.sh copies those docs in before every
   build (.github/workflows/pages.yml); to change a card or a module page,
-  edit the docs in wicketstuff/core. The modules shown before "Show all"
+  edit the docs in wicketstuff/core. A module whose docs moved to
+  docs/removed/<name>/ (front matter removed_in, last_release, replacement)
+  is listed under "Removed modules" instead of in the catalog. The modules shown before "Show all"
   are listed under "featured" in _config.yml; the rest follow by title.
   Category values and their labels are under "module_categories" in _config.yml.
 
@@ -191,7 +196,8 @@
     </div>
 
     <div class="modules" id="module-list">
-{%- assign modules = site.pages | where: "section", "modules" | where: "name", "index.md" -%}
+{%- assign all_modules = site.pages | where: "section", "modules" | where: "name", "index.md" -%}
+{%- assign modules = all_modules | where_exp: "m", "m.removed_in == nil" -%}
 {%- for name in site.featured -%}
   {%- assign dir = "/modules/" | append: name | append: "/" -%}
   {%- assign m = modules | where: "dir", dir | first -%}
@@ -206,6 +212,18 @@
     <div class="more" id="module-more" hidden><button class="btn btn-ghost" type="button">Show all modules</button></div>
     <p class="visually-hidden" id="module-status" role="status" aria-live="polite"></p>
     <p class="empty" id="module-empty">No module matches that search. Try the <a href="https://github.com/wicketstuff/core">repository</a> or the <a href="/contribute/">developer docs</a>.</p>
+{%- assign removed = all_modules | where_exp: "m", "m.removed_in" | sort: "title" -%}
+{%- if removed.size > 0 %}
+    <div class="removed-modules">
+      <h3>Removed modules</h3>
+      <p>These modules are no longer released. Their documentation stays for projects on older versions.</p>
+      <ul>
+        {%- for m in removed %}
+        <li><a href="{{ m.url }}">{{ m.title | escape }}</a> <span>removed in {{ m.removed_in }}{% if m.last_release %}, last release {{ m.last_release }}{% endif %}{% if m.replacement %}; use {% include replacement.html value=m.replacement %} instead{% endif %}</span></li>
+        {%- endfor %}
+      </ul>
+    </div>
+{%- endif %}
   </div>
 </section>
 
@@ -264,38 +282,28 @@ Wicket {{ site.releases.current.wicket }}.x      →  Wicket Stuff {{ site.relea
     <div class="table-wrap">
       <table class="versions">
         <thead>
-          <tr><th>Wicket Stuff</th><th>Apache Wicket</th><th>Java</th><th>Servlet API</th><th>BOM</th><th>Branch</th></tr>
+          <tr><th>Wicket Stuff</th><th>Apache Wicket</th><th>Java</th><th>Servlet API</th><th>Support</th><th>BOM</th><th>Branch</th></tr>
         </thead>
         <tbody>
-          {%- assign lts = site.releases.lts %}{% assign cur = site.releases.current %}
+          {%- assign rows = "" | split: "" | push: site.releases.lts | push: site.releases.current | concat: site.releases.ended -%}
+          {%- for r in rows %}
           <tr>
-            <td>{{ lts.version }} <span class="badge badge-lts">LTS</span></td>
-            <td>{{ lts.wicket }}.x</td>
-            <td>{{ lts.java }}+</td>
-            <td>{{ lts.servlet }}</td>
-            <td>Yes</td>
-            <td><a href="https://github.com/wicketstuff/core/tree/{{ lts.branch }}"><code>{{ lts.branch }}</code></a></td>
+            <td><a href="/versions/{{ r.wicket }}/">{{ r.version }}</a>
+              {%- if r.wicket == site.releases.lts.wicket %} <span class="badge badge-lts">LTS</span>
+              {%- elsif r.wicket == site.releases.current.wicket %} <span class="badge badge-new">Current</span>
+              {%- else %} <span class="badge badge-maint">End of life</span>{% endif %}</td>
+            <td>{{ r.wicket }}.x</td>
+            <td>{{ r.java }}+</td>
+            <td>{{ r.servlet }}</td>
+            <td>{% if r.ended %}Ended {{ r.ended }}{% else %}Until {{ r.until_release }}, {{ r.supported_until }}{% endif %}</td>
+            <td>{% if r.bom == false %}No, set versions per artifact{% else %}Yes{% endif %}</td>
+            <td><a href="https://github.com/wicketstuff/core/tree/{{ r.branch }}"><code>{{ r.branch }}</code></a></td>
           </tr>
-          <tr>
-            <td>{{ cur.version }} <span class="badge badge-new">Current</span></td>
-            <td>{{ cur.wicket }}.x</td>
-            <td>{{ cur.java }}+</td>
-            <td>{{ cur.servlet }}</td>
-            <td>Yes</td>
-            <td><a href="https://github.com/wicketstuff/core/tree/{{ cur.branch }}"><code>{{ cur.branch }}</code></a></td>
-          </tr>
-          <tr>
-            <td>9.25.0 <span class="badge badge-maint">End of life</span></td>
-            <td>9.x</td>
-            <td>11+</td>
-            <td>Java EE (<code>javax.servlet</code> 3.1)</td>
-            <td>No, set versions per artifact</td>
-            <td><a href="https://github.com/wicketstuff/core/tree/wicket-9.x"><code>wicket-9.x</code></a></td>
-          </tr>
+          {%- endfor %}
         </tbody>
       </table>
     </div>
-    <p class="note">Apache Wicket 8 and 9 reached end of life on 29 October 2026 and get no more releases; 9.25.0 is the final Wicket Stuff 9.x release. Wicket {{ site.releases.lts.wicket }} is the long-term support line, supported until {{ site.releases.lts.supported_until }}; it is the default for the snippets and documentation on this site. Since Wicket 11 a new feature line ships every quarter, and every fourth one is a long-term support release. Older releases for Wicket 8, 7, 6, 1.5 and 1.4 remain available on <a href="https://central.sonatype.com/namespace/org.wicketstuff">Maven Central</a>. Development of the next major happens on <code>master</code>. Release notes are on the <a href="https://github.com/wicketstuff/core/releases">GitHub releases page</a>.</p>
+    <p class="note">Apache Wicket 8 and 9 reached end of life on 29 October 2026 and get no more releases; 9.25.0 is the final Wicket Stuff 9.x release. Wicket {{ site.releases.lts.wicket }} is the long-term support line, supported until {{ site.releases.lts.supported_until }}; it is the default for the snippets and documentation on this site. Each line has its own page with its requirements, BOM snippet and the modules it added and removed. Since Wicket 11 a new feature line ships every quarter, and every fourth one is a long-term support release. Older releases for Wicket 8, 7, 6, 1.5 and 1.4 remain available on <a href="https://central.sonatype.com/namespace/org.wicketstuff">Maven Central</a>. Development of the next major happens on <code>master</code>. Release notes are on the <a href="https://github.com/wicketstuff/core/releases">GitHub releases page</a>.</p>
   </div>
 </section>
 
