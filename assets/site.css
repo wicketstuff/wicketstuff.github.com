@@ -317,6 +317,7 @@ table.versions { width: 100%; border-collapse: collapse; font-size: 15px; min-wi
 
 .help-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 @media (max-width: 860px) { .help-grid { grid-template-columns: 1fr; } }
+.panel-stack { display: grid; gap: 20px; align-content: start; }
 .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 30px; }
 .panel h3 { margin: 0 0 6px; font-size: 21px; letter-spacing: -.01em; }
 .panel > p { margin: 0 0 20px; color: var(--ink-soft); }
