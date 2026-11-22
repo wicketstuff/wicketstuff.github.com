@@ -24,14 +24,14 @@
   are listed under "featured" in _config.yml; the rest follow by title.
   Category values and their labels are under "module_categories" in _config.yml.
 
-  Preview locally: scripts/fetch-docs.sh [path/to/core] and then
-  jekyll serve (or the jekyll/jekyll:pages container).
+  Preview locally: scripts/fetch-docs.sh [path/to/core], then
+  bundle install and bundle exec jekyll serve. Or with Docker or Podman:
+  docker run --rm -it -p 4000:4000 -v "$PWD":/site:z -w /site ruby:3.3 \
+    bash -c "bundle install && bundle exec jekyll serve -H 0.0.0.0 -d /tmp/site"
 
-  The header search uses a Pagefind index that is built after Jekyll
-  (scripts/pagefind.sh, in the Pages workflow); jekyll serve doesn't have
-  it. To preview search: jekyll build, scripts/pagefind.sh, then
-  python3 -m http.server -d _site. What gets indexed is set with
-  data-pagefind-* attributes here and in _layouts/doc.html.
+  The site builds with plain Jekyll 4 (Gemfile), not the github-pages gem,
+  so plugins in _plugins/ run. _plugins/search.rb writes /search.json for
+  the header search (assets/site.js), so jekyll serve includes search.
 -->
 <html lang="en">
 <head>
@@ -83,11 +83,11 @@
 <!-- Hero. See "Maintaining this page" at the top for where the version numbers live. -->
 <div class="hero">
   <div class="wrap">
-    <div data-pagefind-body data-pagefind-meta="title:Wicket Stuff homepage">
+    <div>
       <a class="eyebrow" href="https://github.com/wicketstuff/core/releases/tag/wicketstuff-core-{{ site.releases.current.version }}"><span class="dot"></span>Wicket Stuff {{ site.releases.current.version }} is out, for Apache Wicket {{ site.releases.current.wicket }}</a>
       <h1>There's more to <em>Apache&nbsp;Wicket</em></h1>
       <p class="lead">Wicket Stuff is a collection of open source components and integrations for the <a href="https://wicket.apache.org">Apache Wicket</a> web framework. Created by the community around Wicket, released in step with every Wicket version, and available from Maven Central.</p>
-      <div class="actions" data-pagefind-ignore>
+      <div class="actions">
         <a class="btn btn-primary" href="#modules">Browse the modules</a>
         <a class="btn btn-ghost" href="#start">Get started</a>
       </div>
@@ -145,11 +145,11 @@
   </div>
 </div>
 
-<section id="about" data-pagefind-body>
+<section id="about">
   <div class="wrap">
     <div class="section-head">
       <div class="kicker">How it works</div>
-      <h2 id="about-heading">Community projects, one release train</h2>
+      <h2>Community projects, one release train</h2>
       <p>Wicket Stuff is a container for Wicket-related projects. Authors bring the code; the release process makes sure every project ships for every Wicket release.</p>
     </div>
     <div class="pillars">
@@ -172,15 +172,15 @@
   </div>
 </section>
 
-<section id="modules" class="alt" data-pagefind-body>
+<section id="modules" class="alt">
   <div class="wrap">
     <div class="section-head">
       <div class="kicker">Modules</div>
-      <h2 id="modules-heading">Find the piece you are missing</h2>
+      <h2>Find the piece you are missing</h2>
       <p>Components, JavaScript integrations, security, page stores, serializers and developer tools. Artifact ids without a group live under <code>org.wicketstuff</code>.</p>
     </div>
 
-    <div class="catalog-tools js-only" data-pagefind-ignore>
+    <div class="catalog-tools js-only">
       <label class="search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
         <input type="search" id="module-search" placeholder="Search modules, e.g. redis, grid, editor" aria-label="Search modules" autocomplete="off">
@@ -210,17 +210,17 @@
   {%- unless site.featured contains name %}{% include module-card.html module=m %}{% endunless -%}
 {%- endfor %}
     </div>
-    <div class="more" id="module-more" hidden data-pagefind-ignore><button class="btn btn-ghost" type="button">Show all modules</button></div>
-    <p class="visually-hidden" id="module-status" role="status" aria-live="polite" data-pagefind-ignore></p>
-    <p class="empty" id="module-empty" data-pagefind-ignore>No module matches that search. Try the <a href="https://github.com/wicketstuff/core">repository</a> or the <a href="/contribute/">developer docs</a>.</p>
+    <div class="more" id="module-more" hidden><button class="btn btn-ghost" type="button">Show all modules</button></div>
+    <p class="visually-hidden" id="module-status" role="status" aria-live="polite"></p>
+    <p class="empty" id="module-empty">No module matches that search. Try the <a href="https://github.com/wicketstuff/core">repository</a> or the <a href="/contribute/">developer docs</a>.</p>
   </div>
 </section>
 
-<section id="start" data-pagefind-body>
+<section id="start">
   <div class="wrap">
     <div class="section-head">
       <div class="kicker">Get started</div>
-      <h2 id="start-heading">Up and running in three steps</h2>
+      <h2>Up and running in three steps</h2>
       <p>Wicket Stuff modules are plain Maven artifacts. If your project builds with Maven or Gradle, you are ready.</p>
     </div>
     <div class="steps">
@@ -233,7 +233,7 @@ Wicket {{ site.releases.current.wicket }}.x      →  Wicket Stuff {{ site.relea
       <div class="step">
         <h3>Import the BOM</h3>
         <p>The bill of materials manages the versions of all Wicket Stuff artifacts, so they always fit together.</p>
-        <div class="bom-switch js-only" role="group" aria-label="Wicket Stuff line" data-pagefind-ignore>
+        <div class="bom-switch js-only" role="group" aria-label="Wicket Stuff line">
           <button type="button" data-line="lts" aria-pressed="true">{{ site.releases.lts.wicket }}.x LTS</button>
           <button type="button" data-line="current" aria-pressed="false">{{ site.releases.current.wicket }}.x</button>
         </div>
@@ -261,11 +261,11 @@ Wicket {{ site.releases.current.wicket }}.x      →  Wicket Stuff {{ site.relea
   </div>
 </section>
 
-<section id="versions" class="alt" data-pagefind-body>
+<section id="versions" class="alt">
   <div class="wrap">
     <div class="section-head">
       <div class="kicker">Versions</div>
-      <h2 id="versions-heading">Which release do I need?</h2>
+      <h2>Which release do I need?</h2>
       <p>Each Wicket Stuff line follows an Apache Wicket major version and inherits its Java and servlet requirements. Apache Wicket publishes its own <a href="https://wicket.apache.org/versions/">support schedule</a>.</p>
     </div>
     <div class="table-wrap">
@@ -306,11 +306,11 @@ Wicket {{ site.releases.current.wicket }}.x      →  Wicket Stuff {{ site.relea
   </div>
 </section>
 
-<section id="help" data-pagefind-body>
+<section id="help">
   <div class="wrap">
     <div class="section-head">
       <div class="kicker">Help</div>
-      <h2 id="help-heading">Stuck? Found a bug?</h2>
+      <h2>Stuck? Found a bug?</h2>
       <p>Wicket Stuff is run by volunteers from the Wicket community. These are the places where they answer.</p>
     </div>
     <div class="help-grid">
@@ -334,7 +334,7 @@ Wicket {{ site.releases.current.wicket }}.x      →  Wicket Stuff {{ site.relea
           <li>Even better: fix it and open a pull request.</li>
           <li>File the result in the right tracker: <a href="https://github.com/wicketstuff/core/issues">wicketstuff/core</a> for Wicket Stuff modules, <a href="https://github.com/apache/wicket/issues">apache/wicket</a> for Wicket itself.</li>
         </ol>
-        <div class="actions" data-pagefind-ignore>
+        <div class="actions">
           <a class="btn btn-primary" href="https://github.com/wicketstuff/core/issues/new">Open an issue</a>
           <a class="btn btn-ghost" href="https://github.com/wicketstuff/core/issues">View open issues</a>
         </div>
@@ -347,7 +347,7 @@ Wicket {{ site.releases.current.wicket }}.x      →  Wicket Stuff {{ site.relea
           <li>For a Wicket Stuff module, use GitHub's private vulnerability reporting on <a href="https://github.com/wicketstuff/core/security">wicketstuff/core</a>.</li>
           <li>For Apache Wicket itself, contact the <a href="https://wicket.apache.org/community/#security">Apache Wicket security team</a>.</li>
         </ol>
-        <div class="actions" data-pagefind-ignore>
+        <div class="actions">
           <a class="btn btn-primary" href="https://github.com/wicketstuff/core/security/advisories/new">Report a vulnerability</a>
           <a class="btn btn-ghost" href="https://wicket.apache.org/community/#security">Apache Wicket security</a>
         </div>
@@ -357,14 +357,14 @@ Wicket {{ site.releases.current.wicket }}.x      →  Wicket Stuff {{ site.relea
   </div>
 </section>
 
-<section id="contribute" class="flush-top" data-pagefind-body>
+<section id="contribute" class="flush-top">
   <div class="wrap">
     <div class="contribute">
       <div>
-        <h2 id="contribute-heading">Built something for Wicket? Bring it home.</h2>
+        <h2>Built something for Wicket? Bring it home.</h2>
         <p>Wicket Stuff takes care of building, testing and releasing your project for every new Wicket version, so users can always find a version that fits.</p>
         <p>Fix a bug, update a JavaScript library, add an example, or contribute an entire module. Pull requests are welcome.</p>
-        <div class="actions" data-pagefind-ignore>
+        <div class="actions">
           <a class="btn btn-primary" href="https://github.com/wicketstuff/core/pulls">View pull requests</a>
           <a class="btn btn-ghost" href="https://github.com/wicketstuff/core">Star on GitHub</a>
         </div>

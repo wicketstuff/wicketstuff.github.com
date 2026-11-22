@@ -107,11 +107,12 @@
     });
   }
 
-  // Site search. The Pagefind index (/pagefind/) is built after Jekyll by
-  // scripts/pagefind.sh; its script is loaded on first use. Module pages
-  // carry a version filter ("lts" or "current"); a search shows one line at
-  // a time, so a page never appears twice, and pages without the filter
-  // (developer docs, homepage) appear in both.
+  // Site search. _plugins/search.rb writes /search.json at build time, a
+  // record per page and per ## section; MiniSearch (assets/minisearch-*.js)
+  // and the index load on first use. The same setup as the user guide search
+  // on wicket.apache.org. Module records carry their release line ("lts" or
+  // "current"); a search shows one line at a time, so a page never appears
+  // twice, and the developer docs and the homepage appear in both.
   var searchRoot = document.querySelector('[data-search]');
   if (searchRoot) closeSearch = initSearch(searchRoot) || closeSearch;
 
@@ -128,18 +129,90 @@
     var live = root.querySelector('.search-live');
     var scopeBtns = Array.prototype.slice.call(panel.querySelectorAll('[data-scope]'));
     var scope = scopeBtns.length && location.pathname.indexOf('/current/') === 0 ? 'current' : 'lts';
-    var filters = { lts: { version: { none: ['current'] } }, current: { version: { none: ['lts'] } } };
-    var pagefind = null;
-    var seq = 0, results = [], shown = 0, inputTimer, liveTimer;
+    var engine = null;
+    var results = [], shown = 0, inputTimer, liveTimer;
+
+    // Splits class names at their capitals: ModalContentWindow also yields
+    // modal, content, window.
+    function tokenize(text) {
+      var out = [];
+      text.split(/[^A-Za-z0-9_]+/).forEach(function (w) {
+        if (!w) return;
+        out.push(w);
+        var parts = w.split(/(?=[A-Z][a-z])|(?<=[a-z0-9])(?=[A-Z])/);
+        if (parts.length > 1) out.push.apply(out, parts);
+      });
+      return out;
+    }
+    // Words that carry no meaning in a question like "how do I use a grid".
+    var STOP = {};
+    ('a an and are as at be by can do does for from get how i if in into is it its my of on or ' +
+     'should so that the their then there this to use using want was what when where which why ' +
+     'will with without you your').split(' ').forEach(function (w) { STOP[w] = true; });
+    function processTerm(term) {
+      var t = term.toLowerCase();
+      return STOP[t] ? null : t;
+    }
 
     function load() {
-      if (!pagefind) {
-        pagefind = import('/pagefind/pagefind.js').then(function (pf) {
-          return pf.options({ excerptLength: 22 }).then(function () { return pf; });
+      if (!engine) {
+        engine = new Promise(function (resolve, reject) {
+          if (window.MiniSearch) return resolve();
+          var script = document.createElement('script');
+          script.src = root.getAttribute('data-script');
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
+        }).then(function () {
+          return fetch(root.getAttribute('data-index'));
+        }).then(function (response) {
+          if (!response.ok) throw new Error(response.status);
+          return response.json();
+        }).then(function (records) {
+          var search = new window.MiniSearch({
+            fields: ['title', 'apis', 'keywords', 'page', 'text', 'body'],
+            storeFields: ['url', 'title', 'page', 'label', 'line', 'text', 'body'],
+            tokenize: tokenize,
+            processTerm: processTerm,
+            searchOptions: {
+              processTerm: processTerm,
+              boost: { title: 4, apis: 3, keywords: 2, page: 1.5, text: 1, body: 0.5 },
+              // Prefix matching for the word being typed, once it has three letters.
+              prefix: function (term, i, terms) { return i === terms.length - 1 && term.length > 2; },
+              fuzzy: function (term) { return term.length > 4 ? 0.2 : false; },
+              tokenize: function (q) { return q.split(/[^A-Za-z0-9_]+/).filter(Boolean); }
+            }
+          });
+          search.addAll(records);
+          return search;
         });
-        pagefind.catch(function () { pagefind = null; });
+        engine.catch(function () { engine = null; });
       }
-      return pagefind;
+      return engine;
+    }
+
+    // Whether a section matches on more than the title of its page, which
+    // every record of a page carries.
+    function ownHit(r) {
+      return Object.keys(r.match).some(function (t) {
+        return r.match[t].some(function (field) { return field !== 'page'; });
+      });
+    }
+    // The pages that match, best first: each with its own record (hits in
+    // the intro) and up to three of its sections.
+    function find(search, query, line) {
+      var options = { filter: function (r) { return !line || !r.line || r.line === line; } };
+      var hits = search.search(query, Object.assign({ combineWith: 'AND' }, options));
+      if (!hits.length) hits = search.search(query, options);
+      var pages = [], byUrl = {};
+      hits.forEach(function (r) {
+        var url = r.url.split('#')[0];
+        var p = byUrl[url];
+        if (!p) { p = byUrl[url] = { url: url, page: r.page, label: r.label, top: null, sections: [] }; pages.push(p); }
+        if (r.url === url) p.top = r;
+        else if (p.sections.length < 3 && ownHit(r)) p.sections.push(r);
+      });
+      return pages;
     }
 
     function isOpen() { return root.classList.contains('open'); }
@@ -170,60 +243,48 @@
 
     function run() {
       var q = input.value.trim();
-      var my = ++seq;
       if (!q) { hideResults(); list.textContent = ''; return; }
-      load().then(function (pf) {
+      load().then(function (search) {
+        if (q !== input.value.trim()) return;
         var other = scope === 'lts' ? 'current' : 'lts';
-        return Promise.all([
-          pf.search(q, scopeBtns.length ? { filters: filters[scope] } : {}),
-          scopeBtns.length ? pf.search(q, { filters: filters[other] }) : null
-        ]).then(function (r) {
-          if (my !== seq) return;
-          results = r[0] ? r[0].results : [];
-          scopeBtns.forEach(function (b) {
-            var n = b.getAttribute('data-scope') === scope ? results.length : (r[1] ? r[1].results.length : 0);
-            b.querySelector('.n').textContent = '(' + n + ')';
-            b.setAttribute('aria-label', b.firstChild.textContent.trim() + ', ' + n + (n === 1 ? ' result' : ' results'));
-          });
-          shown = 0;
-          list.textContent = '';
-          var where = scopeBtns.length ? ' in the ' + label(scope) : '';
-          if (!results.length) {
-            var elsewhere = r[1] && r[1].results.length;
-            summary.textContent = 'No results for “' + q + '”' + where + '.' +
-              (elsewhere ? ' The ' + label(scope === 'lts' ? 'current' : 'lts') + ' have ' + elsewhere + '.' : '');
-          } else {
-            summary.textContent = results.length + (results.length === 1 ? ' result' : ' results') + where;
-          }
-          panel.hidden = false;
-          announce(summary.textContent);
-          return showMore(my, false);
+        results = find(search, q, scopeBtns.length ? scope : null);
+        var elsewhere = scopeBtns.length ? find(search, q, other).length : 0;
+        scopeBtns.forEach(function (b) {
+          var n = b.getAttribute('data-scope') === scope ? results.length : elsewhere;
+          b.querySelector('.n').textContent = '(' + n + ')';
+          b.setAttribute('aria-label', b.firstChild.textContent.trim() + ', ' + n + (n === 1 ? ' result' : ' results'));
         });
-      }).catch(function () {
-        if (my !== seq) return;
+        shown = 0;
         list.textContent = '';
-        summary.textContent = 'Search is not available here. It needs the Pagefind index, which the site build creates.';
+        var where = scopeBtns.length ? ' in the ' + label(scope) : '';
+        if (!results.length) {
+          summary.textContent = 'No results for “' + q + '”' + where + '.' +
+            (elsewhere ? ' The ' + label(other) + ' have ' + elsewhere + '.' : '');
+        } else {
+          summary.textContent = results.length + (results.length === 1 ? ' result' : ' results') + where;
+        }
+        panel.hidden = false;
+        announce(summary.textContent);
+        showMore(false);
+      }).catch(function () {
+        list.textContent = '';
+        summary.textContent = 'Search is not available right now: the search index could not be loaded.';
         more.hidden = true;
         panel.hidden = false;
         announce(summary.textContent);
       });
     }
 
-    function showMore(my, focusFirst) {
-      var batch = results.slice(shown, shown + PAGE);
-      shown += batch.length;
-      more.hidden = true;
-      return Promise.all(batch.map(function (r) { return r.data(); })).then(function (data) {
-        if (my !== seq) return;
-        var first = null;
-        data.forEach(function (d) {
-          var li = render(d);
-          first = first || li.querySelector('a');
-          list.appendChild(li);
-        });
-        more.hidden = shown >= results.length;
-        if (focusFirst && first) first.focus();
+    function showMore(focusFirst) {
+      var first = null;
+      results.slice(shown, shown + PAGE).forEach(function (p) {
+        var li = render(p);
+        first = first || li.querySelector('a');
+        list.appendChild(li);
       });
+      shown = Math.min(shown + PAGE, results.length);
+      more.hidden = shown >= results.length;
+      if (focusFirst && first) first.focus();
     }
 
     function el(tag, cls, text) {
@@ -232,36 +293,46 @@
       if (text) e.textContent = text;
       return e;
     }
-    function excerpt(html) {
-      // Pagefind escapes the page text and only adds <mark> around hits.
+    // About 180 characters of the record around its first hit, with the
+    // matched words marked; the description when the hit is elsewhere.
+    function excerpt(r) {
       var p = el('p', 'sr-excerpt');
-      p.innerHTML = html;
+      var terms = r.terms.map(function (t) { return t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); });
+      var re = new RegExp('(' + terms.join('|') + ')', 'gi');
+      var body = r.body || '';
+      var at = body.search(re);
+      var src;
+      if (at === -1) {
+        src = r.text || body.slice(0, 180);
+      } else {
+        var from = Math.max(0, at - 60);
+        if (from > 0) from = body.indexOf(' ', from) + 1 || from;
+        src = (from > 0 ? '…' : '') + body.slice(from, from + 180) + (from + 180 < body.length ? '…' : '');
+      }
+      src.split(re).forEach(function (part, i) {
+        if (!part) return;
+        p.appendChild(i % 2 ? el('mark', null, part) : document.createTextNode(part));
+      });
       return p;
     }
-    // A result: the page link (section label and title), then the sections
-    // of the page with hits (headings with an id), best first. Hits before
-    // the first such heading belong to the page itself. The excerpts are
-    // outside the links so a link's name is just its title.
-    function render(d) {
+    // A result: the page link (label and title) with an excerpt of its intro
+    // when that matches, then the matching sections. The excerpts are outside
+    // the links so a link's name is just its title.
+    function render(p) {
       var li = el('li');
       var page = el('a', 'sr-page');
-      page.href = d.url;
-      if (d.meta.section) page.appendChild(el('span', 'sr-where', d.meta.section));
-      page.appendChild(el('span', 'sr-title', d.meta.title || d.url));
+      page.href = p.url;
+      if (p.label) page.appendChild(el('span', 'sr-where', p.label));
+      page.appendChild(el('span', 'sr-title', p.page));
       li.appendChild(page);
-      var subs = (d.sub_results || []).slice().sort(function (a, b) {
-        return b.locations.length - a.locations.length;
-      }).slice(0, 3);
-      var top = subs.filter(function (s) { return !s.anchor; })[0];
-      if (top || !subs.length) li.appendChild(excerpt(top ? top.excerpt : d.excerpt));
-      subs.forEach(function (s) {
-        if (!s.anchor) return;
+      if (p.top) li.appendChild(excerpt(p.top));
+      p.sections.forEach(function (s) {
         var div = el('div', 'sr-sub');
         var a = el('a');
         a.href = s.url;
         a.textContent = s.title;
         div.appendChild(a);
-        div.appendChild(excerpt(s.excerpt));
+        div.appendChild(excerpt(s));
         li.appendChild(div);
       });
       return li;
@@ -313,7 +384,7 @@
       });
       b.setAttribute('aria-pressed', String(b.getAttribute('data-scope') === scope));
     });
-    more.addEventListener('click', function () { showMore(seq, true); });
+    more.addEventListener('click', function () { showMore(true); });
     // A result on the current page only changes the hash; close the search.
     list.addEventListener('click', function (e) {
       if (e.target.closest('a')) { hideResults(); if (isOpen()) setOpen(false); }

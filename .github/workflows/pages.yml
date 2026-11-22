@@ -1,7 +1,8 @@
 # Builds wicketstuff.org: copies the module and developer docs from
-# wicketstuff/core (see scripts/fetch-docs.sh), runs Jekyll, builds the
-# search index with Pagefind (scripts/pagefind.sh) and deploys to GitHub
-# Pages. Runs on every push, nightly to pick up docs merged in
+# wicketstuff/core (see scripts/fetch-docs.sh), runs Jekyll and deploys
+# to GitHub Pages. Jekyll runs from the Gemfile rather than through
+# actions/jekyll-build-pages, so the plugins in _plugins/ run (the search
+# index). Runs on every push, nightly to pick up docs merged in
 # core, and on demand.
 name: Pages
 
@@ -41,17 +42,13 @@ jobs:
           LTS_REF: ${{ inputs.lts_ref }}
           CURRENT_REF: ${{ inputs.current_ref }}
       - uses: actions/configure-pages@v6
-      - uses: actions/jekyll-build-pages@v1
+      - uses: ruby/setup-ruby@v1
         with:
-          source: ./
-          destination: ./_site
-      # jekyll-build-pages runs in a Docker container as root, so _site is
-      # owned by root; hand it to the runner user so Pagefind can write
-      # _site/pagefind/.
-      - name: Build the search index
-        run: |
-          sudo chown -R "$(id -u):$(id -g)" _site
-          scripts/pagefind.sh _site
+          bundler-cache: true
+      - name: Build with Jekyll
+        run: bundle exec jekyll build -d _site
+        env:
+          JEKYLL_ENV: production
       - uses: actions/upload-pages-artifact@v5
 
   deploy:

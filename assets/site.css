@@ -313,7 +313,6 @@ section.alt { background: var(--bg-alt); border-top: 1px solid var(--line); bord
 
 .section-head { max-width: 720px; margin-bottom: 44px; }
 .section-head .kicker { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); }
-.section-head h2[id] { scroll-margin-top: 40px; } /* search results link here; with scroll-padding-top the kicker stays in view */
 .section-head h2 { font-size: clamp(28px, 4vw, 40px); line-height: 1.15; letter-spacing: -.02em; margin: 8px 0 14px; }
 .section-head p { color: var(--ink-soft); font-size: 18px; margin: 0; }
 
@@ -429,7 +428,6 @@ table.versions { width: 100%; border-collapse: collapse; font-size: 15px; min-wi
 
 .contribute { display: grid; grid-template-columns: 1.2fr .8fr; gap: 48px; align-items: center; background: #1d1a16; color: #f3efe9; border: 1px solid transparent; border-radius: 22px; padding: 56px; position: relative; overflow: hidden; }
 .contribute::after { content: ""; position: absolute; right: -120px; bottom: -160px; width: 420px; height: 420px; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 45%, transparent), transparent); pointer-events: none; }
-.contribute h2[id] { scroll-margin-top: 40px; }
 .contribute h2 { font-size: clamp(26px, 3.5vw, 36px); line-height: 1.15; letter-spacing: -.02em; margin: 0 0 14px; }
 .contribute p { margin: 0 0 14px; opacity: .82; font-size: 17px; }
 .contribute ul { margin: 0; padding: 0; list-style: none; position: relative; z-index: 1; }

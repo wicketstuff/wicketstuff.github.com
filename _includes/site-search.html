@@ -1,11 +1,11 @@
 {%- comment -%}
-  Site search in the header (homepage and docs layout). The index is built
-  by Pagefind after the Jekyll build (scripts/pagefind.sh); assets/site.js
-  loads /pagefind/pagefind.js on first use. "lts" and "current" are the
-  values of the version filter that _layouts/doc.html puts on module pages.
+  Site search in the header (homepage and docs layout), run by assets/site.js
+  over /search.json, which _plugins/search.rb writes. The script and the
+  index load on first use. "lts" and "current" are the release lines of the
+  module records.
 {%- endcomment -%}
 {%- assign core = site.data.core -%}
-    <div class="site-search js-only" data-search>
+    <div class="site-search js-only" data-search data-index="/search.json" data-script="/assets/minisearch-7.2.0.js">
       <button class="search-toggle" type="button" aria-expanded="false" aria-controls="search-box" aria-label="Search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
       </button>
