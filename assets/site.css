@@ -371,6 +371,15 @@ table.versions { width: 100%; border-collapse: collapse; font-size: 15px; min-wi
 
 /* ---------- Documentation pages (Jekyll layout) ---------- */
 
+/* 404 page */
+.not-found { padding: 96px 0 112px; max-width: 40em; }
+.not-found .code { margin: 0; font-family: var(--mono); font-weight: 700; color: var(--accent-ink); letter-spacing: .08em; }
+.not-found h1 { font-size: clamp(34px, 5vw, 52px); line-height: 1.05; letter-spacing: -.03em; margin: 8px 0 16px; font-weight: 800; }
+.not-found .lead { font-size: 19px; color: var(--ink-soft); margin: 0 0 32px; }
+.not-found .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.not-found .hint { margin: 40px 0 0; color: var(--muted); font-size: 15px; }
+@media (max-width: 640px) { .not-found { padding: 56px 0 72px; } }
+
 .doc { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 56px; padding-top: 56px; padding-bottom: 88px; }
 @media (max-width: 860px) { .doc { grid-template-columns: 1fr; gap: 24px; padding-top: 32px; } }
 .doc-nav { position: sticky; top: 96px; align-self: start; font-size: 15px; }
