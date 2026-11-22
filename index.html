@@ -10,10 +10,10 @@
   (colors are variables at the top), assets/site.js the behavior.
   _layouts/default.html is the Jekyll layout for the wicketsecurity/ docs.
 
-  On every release, search for the old version numbers (now 11.0.0 and
-  10.12.0) and replace them. They appear in: the hero release banner, the
-  Maven and Gradle hero snippets, "How it works", get-started steps 1 and 2,
-  and the version table with its note below it.
+  Release versions live under "releases" in _config.yml: the long-term
+  support line (the default in snippets and docs) and the current feature
+  line. Update them on every release. Only the end-of-life 9.x row of the
+  version table is written out here.
 
   The module catalog is generated. Each module in wicketstuff/core has a
   docs/index.md whose front matter (title, category, description,
@@ -77,7 +77,7 @@
 <div class="hero">
   <div class="wrap">
     <div>
-      <a class="eyebrow" href="https://github.com/wicketstuff/core/releases/tag/wicketstuff-core-11.0.0"><span class="dot"></span>Wicket Stuff 11.0.0 is out, for Apache Wicket 11</a>
+      <a class="eyebrow" href="https://github.com/wicketstuff/core/releases/tag/wicketstuff-core-{{ site.releases.current.version }}"><span class="dot"></span>Wicket Stuff {{ site.releases.current.version }} is out, for Apache Wicket {{ site.releases.current.wicket }}</a>
       <h1>There's more to <em>Apache&nbsp;Wicket</em></h1>
       <p class="lead">Wicket Stuff is a collection of open source components and integrations for the <a href="https://wicket.apache.org">Apache Wicket</a> web framework. Created by the community around Wicket, released in step with every Wicket version, and available from Maven Central.</p>
       <div class="actions">
@@ -92,6 +92,11 @@
       </ul>
     </div>
 
+    <div class="hero-code">
+      <div class="bom-switch js-only" role="group" aria-label="Wicket Stuff line">
+        <button type="button" data-line="lts" aria-pressed="true">{{ site.releases.lts.wicket }}.x LTS</button>
+        <button type="button" data-line="current" aria-pressed="false">{{ site.releases.current.wicket }}.x</button>
+      </div>
     <div class="code-card" data-tabs>
       <div class="bar">
         <i></i><i></i><i></i>
@@ -107,7 +112,7 @@
     <span class="t-tag">&lt;dependency&gt;</span>
       <span class="t-tag">&lt;groupId&gt;</span>org.wicketstuff<span class="t-tag">&lt;/groupId&gt;</span>
       <span class="t-tag">&lt;artifactId&gt;</span>wicketstuff-bom<span class="t-tag">&lt;/artifactId&gt;</span>
-      <span class="t-tag">&lt;version&gt;</span><span class="t-str">11.0.0</span><span class="t-tag">&lt;/version&gt;</span>
+      <span class="t-tag">&lt;version&gt;</span><span class="t-str" data-bom data-lts="{{ site.releases.lts.version }}" data-current="{{ site.releases.current.version }}">{{ site.releases.lts.version }}</span><span class="t-tag">&lt;/version&gt;</span>
       <span class="t-tag">&lt;type&gt;</span>pom<span class="t-tag">&lt;/type&gt;</span>
       <span class="t-tag">&lt;scope&gt;</span>import<span class="t-tag">&lt;/scope&gt;</span>
     <span class="t-tag">&lt;/dependency&gt;</span>
@@ -123,11 +128,12 @@
 <span class="t-tag">&lt;/dependencies&gt;</span></code></pre>
 <pre id="hero-gradle" data-tabpanel aria-labelledby="tab-hero-gradle"><code><span class="t-tag">dependencies</span> {
     <span class="t-com">// One BOM keeps every module in line</span>
-    implementation(platform(<span class="t-str">"org.wicketstuff:wicketstuff-bom:11.0.0"</span>))
+    implementation(platform(<span class="t-str">"org.wicketstuff:wicketstuff-bom:</span><span class="t-str" data-bom data-lts="{{ site.releases.lts.version }}" data-current="{{ site.releases.current.version }}">{{ site.releases.lts.version }}</span><span class="t-str">"</span>))
 
     <span class="t-com">// Then pick what you need, no versions</span>
     implementation(<span class="t-str">"org.wicketstuff:wicketstuff-select2"</span>)
 }</code></pre>
+    </div>
     </div>
   </div>
 </div>
@@ -143,7 +149,7 @@
       <div class="pillar">
         <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></div>
         <h3>Released in step with Wicket</h3>
-        <p>The version tells you which Wicket it is built for. <code>11.0.0</code> pairs with Wicket 11, <code>10.12.0</code> with Wicket 10. No compatibility guesswork.</p>
+        <p>The version tells you which Wicket it is built for. <code>{{ site.releases.lts.version }}</code> pairs with Wicket {{ site.releases.lts.wicket }}, <code>{{ site.releases.current.version }}</code> with Wicket {{ site.releases.current.wicket }}. No compatibility guesswork.</p>
       </div>
       <div class="pillar">
         <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></div>
@@ -213,19 +219,23 @@
     <div class="steps">
       <div class="step">
         <h3>Match your Wicket version</h3>
-        <p>Use the Wicket Stuff release with the same major version as Apache Wicket. Running Wicket 11? Use Wicket Stuff 11.x. See the <a href="#versions">version table</a>.</p>
-<pre><code>Wicket 11.x      →  Wicket Stuff 11.0.0
-Wicket 10.x LTS  →  Wicket Stuff 10.12.0</code></pre>
+        <p>Use the Wicket Stuff release with the same major version as Apache Wicket. Wicket {{ site.releases.lts.wicket }} is the long-term support line; {{ site.releases.current.wicket }} is the current feature line. See the <a href="#versions">version table</a>.</p>
+<pre><code>Wicket {{ site.releases.lts.wicket }}.x LTS  →  Wicket Stuff {{ site.releases.lts.version }}
+Wicket {{ site.releases.current.wicket }}.x      →  Wicket Stuff {{ site.releases.current.version }}</code></pre>
       </div>
       <div class="step">
         <h3>Import the BOM</h3>
         <p>The bill of materials manages the versions of all Wicket Stuff artifacts, so they always fit together.</p>
+        <div class="bom-switch js-only" role="group" aria-label="Wicket Stuff line">
+          <button type="button" data-line="lts" aria-pressed="true">{{ site.releases.lts.wicket }}.x LTS</button>
+          <button type="button" data-line="current" aria-pressed="false">{{ site.releases.current.wicket }}.x</button>
+        </div>
 <pre><code><span class="t-tag">&lt;dependencyManagement&gt;</span>
   <span class="t-tag">&lt;dependencies&gt;</span>
     <span class="t-tag">&lt;dependency&gt;</span>
       <span class="t-tag">&lt;groupId&gt;</span>org.wicketstuff<span class="t-tag">&lt;/groupId&gt;</span>
       <span class="t-tag">&lt;artifactId&gt;</span>wicketstuff-bom<span class="t-tag">&lt;/artifactId&gt;</span>
-      <span class="t-tag">&lt;version&gt;</span><span class="t-str">11.0.0</span><span class="t-tag">&lt;/version&gt;</span>
+      <span class="t-tag">&lt;version&gt;</span><span class="t-str" data-bom data-lts="{{ site.releases.lts.version }}" data-current="{{ site.releases.current.version }}">{{ site.releases.lts.version }}</span><span class="t-tag">&lt;/version&gt;</span>
       <span class="t-tag">&lt;type&gt;</span>pom<span class="t-tag">&lt;/type&gt;</span>
       <span class="t-tag">&lt;scope&gt;</span>import<span class="t-tag">&lt;/scope&gt;</span>
     <span class="t-tag">&lt;/dependency&gt;</span>
@@ -257,21 +267,22 @@ Wicket 10.x LTS  →  Wicket Stuff 10.12.0</code></pre>
           <tr><th>Wicket Stuff</th><th>Apache Wicket</th><th>Java</th><th>Servlet API</th><th>BOM</th><th>Branch</th></tr>
         </thead>
         <tbody>
+          {%- assign lts = site.releases.lts %}{% assign cur = site.releases.current %}
           <tr>
-            <td>11.0.0 <span class="badge badge-new">Latest</span></td>
-            <td>11.x</td>
-            <td>21+</td>
-            <td>Jakarta EE 11 (Servlet 6.1)</td>
+            <td>{{ lts.version }} <span class="badge badge-lts">LTS</span></td>
+            <td>{{ lts.wicket }}.x</td>
+            <td>{{ lts.java }}+</td>
+            <td>{{ lts.servlet }}</td>
             <td>Yes</td>
-            <td><a href="https://github.com/wicketstuff/core/tree/wicket-11.x"><code>wicket-11.x</code></a></td>
+            <td><a href="https://github.com/wicketstuff/core/tree/{{ lts.branch }}"><code>{{ lts.branch }}</code></a></td>
           </tr>
           <tr>
-            <td>10.12.0 <span class="badge badge-lts">LTS</span></td>
-            <td>10.x</td>
-            <td>17+</td>
-            <td>Jakarta EE 10 (Servlet 6.0)</td>
+            <td>{{ cur.version }} <span class="badge badge-new">Current</span></td>
+            <td>{{ cur.wicket }}.x</td>
+            <td>{{ cur.java }}+</td>
+            <td>{{ cur.servlet }}</td>
             <td>Yes</td>
-            <td><a href="https://github.com/wicketstuff/core/tree/wicket-10.x"><code>wicket-10.x</code></a></td>
+            <td><a href="https://github.com/wicketstuff/core/tree/{{ cur.branch }}"><code>{{ cur.branch }}</code></a></td>
           </tr>
           <tr>
             <td>9.25.0 <span class="badge badge-maint">End of life</span></td>
@@ -284,7 +295,7 @@ Wicket 10.x LTS  →  Wicket Stuff 10.12.0</code></pre>
         </tbody>
       </table>
     </div>
-    <p class="note">Apache Wicket 8 and 9 reached end of life on 29 October 2026 and get no more releases; 9.25.0 is the final Wicket Stuff 9.x release. Wicket 10 is the long-term support line until July 2027. Older releases for Wicket 8, 7, 6, 1.5 and 1.4 remain available on <a href="https://central.sonatype.com/namespace/org.wicketstuff">Maven Central</a>. Development of the next major happens on <code>master</code>. Release notes are on the <a href="https://github.com/wicketstuff/core/releases">GitHub releases page</a>.</p>
+    <p class="note">Apache Wicket 8 and 9 reached end of life on 29 October 2026 and get no more releases; 9.25.0 is the final Wicket Stuff 9.x release. Wicket {{ site.releases.lts.wicket }} is the long-term support line, supported until {{ site.releases.lts.supported_until }}; it is the default for the snippets and documentation on this site. Since Wicket 11 a new feature line ships every quarter, and every fourth one is a long-term support release. Older releases for Wicket 8, 7, 6, 1.5 and 1.4 remain available on <a href="https://central.sonatype.com/namespace/org.wicketstuff">Maven Central</a>. Development of the next major happens on <code>master</code>. Release notes are on the <a href="https://github.com/wicketstuff/core/releases">GitHub releases page</a>.</p>
   </div>
 </section>
 
