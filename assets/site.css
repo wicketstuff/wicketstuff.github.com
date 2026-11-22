@@ -145,11 +145,94 @@ html:not(.js) .js-only { display: none !important; }
 @media (max-width: 860px) {
   .menu-btn { display: block; }
   .theme-btn { margin-left: auto; }
+  .js .site-header .wrap { gap: 8px; }
+  .js .site-search { margin-left: auto; }
+  .js .site-search ~ .theme-btn, .js .menu-btn { margin-left: 0; }
   .js .nav { max-height: calc(100dvh - 64px); overflow-y: auto; display: none; position: absolute; top: 64px; left: 0; right: 0; flex-direction: column; align-items: stretch; background: var(--bg); border-bottom: 1px solid var(--line); padding: 8px 16px 16px; }
   .js .nav.open { display: flex; }
   html:not(.js) .site-header .wrap { height: auto; flex-wrap: wrap; padding-top: 12px; padding-bottom: 8px; }
   html:not(.js) .nav { flex-wrap: wrap; margin-left: 0; }
   .nav .gh { margin-left: 0; justify-content: center; }
+}
+
+/* ---------- Site search (header) ----------
+   Wide screens show the field in the header with the results in a dropdown.
+   Narrower screens show a button that opens the field and results in a panel
+   under the header, like the mobile menu. The breakpoint is also in
+   assets/site.js (SEARCH_COMPACT). */
+
+.site-search { flex: none; }
+.search-toggle { display: none; place-items: center; width: 38px; height: 38px; background: none; border: 1px solid var(--line-strong); border-radius: 8px; color: var(--ink-soft); cursor: pointer; }
+.search-toggle:hover, .search-toggle[aria-expanded="true"] { color: var(--ink); border-color: var(--muted); }
+.search-toggle svg { width: 18px; height: 18px; }
+
+.search-form { position: relative; margin: 0; }
+.search-form svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--muted); pointer-events: none; }
+.search-form input {
+  width: 220px; height: 38px; font: inherit; font-size: 15px; color: var(--ink);
+  background: var(--surface); border: 1px solid var(--line-strong); border-radius: 8px;
+  padding: 0 34px 0 34px;
+}
+.search-form input::placeholder { color: var(--muted); opacity: 1; }
+.search-form input::-webkit-search-cancel-button {
+  -webkit-appearance: none; appearance: none; width: 14px; height: 14px; cursor: pointer; background: var(--muted);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.search-form input::-webkit-search-cancel-button:hover { background: var(--ink); }
+.search-form input:hover { border-color: var(--muted); }
+.search-form input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent); }
+.search-form kbd { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 12px; line-height: 1; color: var(--muted); border: 1px solid var(--line-strong); border-radius: 5px; padding: 3px 6px; pointer-events: none; }
+.search-form input:focus ~ kbd, .search-form input:not(:placeholder-shown) ~ kbd { display: none; }
+
+.search-results {
+  position: absolute; top: calc(100% + 13px); right: 0; z-index: 60;
+  width: min(600px, calc(100vw - 48px)); max-height: calc(100dvh - 96px); overflow-y: auto; overscroll-behavior: contain;
+  background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 12px;
+}
+.search-results[hidden] { display: none; }
+.search-scope { display: inline-flex; gap: 2px; padding: 3px; margin: 0 0 8px; background: var(--bg-alt); border: 1px solid var(--line); border-radius: 10px; }
+.search-scope button { font: 600 13px var(--font); color: var(--muted); background: none; border: 0; border-radius: 7px; padding: 4px 12px; cursor: pointer; }
+.search-scope button:hover { color: var(--ink); }
+.search-scope button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0, 0, 0, .12); }
+.search-scope .n { font-weight: 500; font-variant-numeric: tabular-nums; }
+.search-summary { margin: 4px 4px 8px; font-size: 14px; color: var(--muted); }
+.search-summary:empty { display: none; }
+.search-list { list-style: none; margin: 0; padding: 0; }
+.search-list > li { border-top: 1px solid var(--line); padding: 6px 0; }
+.search-list a { display: block; border-radius: 6px; text-decoration: none; color: var(--ink); }
+.search-list a:hover { color: var(--accent-ink); }
+.search-list a:focus-visible { outline-offset: 1px; }
+.sr-page { padding: 4px 8px 0; }
+.sr-where { display: block; font-size: 12.5px; font-weight: 600; color: var(--muted); }
+.sr-title { display: block; font-weight: 700; font-size: 16px; line-height: 1.35; }
+.sr-sub { margin: 6px 8px 2px 10px; padding-left: 10px; border-left: 2px solid var(--line); }
+.sr-sub a { font-size: 14.5px; font-weight: 600; line-height: 1.4; color: var(--accent-ink); }
+.sr-sub a:hover { color: var(--link-hover); text-decoration: underline; }
+.sr-excerpt { margin: 2px 8px 4px; font-size: 14px; line-height: 1.5; color: var(--ink-soft); overflow-wrap: anywhere; }
+.sr-sub .sr-excerpt { margin: 2px 0 0; }
+.sr-excerpt mark { background: color-mix(in srgb, var(--accent) 24%, transparent); color: var(--ink); border-radius: 2px; padding: 0 1px; }
+.search-more { display: flex; margin: 8px auto 4px; font-size: 14px; padding: 8px 14px; }
+.search-more[hidden] { display: none; }
+
+@media (max-width: 1099px) {
+  .search-toggle { display: inline-grid; }
+  .js .search-box { display: none; position: absolute; top: 64px; left: 0; right: 0; background: var(--bg); border-bottom: 1px solid var(--line); padding: 12px 24px 16px; }
+  .js .site-search.open .search-box { display: block; }
+  .search-form input { width: 100%; font-size: 16px; }
+  .search-form kbd { display: none; }
+  .search-results { position: static; width: auto; max-height: calc(100dvh - 64px - 78px); margin-top: 12px; box-shadow: none; }
+}
+@media (min-width: 1100px) {
+  .site-search { position: relative; }
+}
+@media (max-width: 600px) { .js .search-box { padding: 12px 16px 16px; } .search-results { padding: 8px; } }
+@media (max-width: 374px) {
+  .js .site-header .wrap { gap: 6px; }
+  .brand { gap: 8px; font-size: 16px; }
+  .search-toggle, .theme-btn { width: 34px; height: 34px; }
+  .menu-btn { padding: 6px 8px; }
 }
 
 /* ---------- Buttons ---------- */

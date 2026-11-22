@@ -87,8 +87,13 @@
   // Mobile menu
   var menuBtn = document.querySelector('.menu-btn');
   var nav = document.getElementById('nav');
+  var closeSearch = function () {};
+  function closeMenu() {
+    if (menuBtn && nav) { nav.classList.remove('open'); menuBtn.setAttribute('aria-expanded', 'false'); }
+  }
   if (menuBtn && nav) {
     var setOpen = function (open) {
+      if (open) closeSearch();
       nav.classList.toggle('open', open);
       menuBtn.setAttribute('aria-expanded', String(open));
     };
@@ -100,6 +105,315 @@
     document.addEventListener('click', function (e) {
       if (nav.classList.contains('open') && !e.target.closest('.site-header')) setOpen(false);
     });
+  }
+
+  // Site search. _plugins/search.rb writes /search.json at build time, a
+  // record per page and per ## section; MiniSearch (assets/minisearch-*.js)
+  // and the index load on first use. The same setup as the user guide search
+  // on wicket.apache.org. Module records carry their release line ("lts" or
+  // "current"); a search shows one line at a time, so a page never appears
+  // twice, and the developer docs and the homepage appear in both.
+  var searchRoot = document.querySelector('[data-search]');
+  if (searchRoot) closeSearch = initSearch(searchRoot) || closeSearch;
+
+  function initSearch(root) {
+    var SEARCH_COMPACT = window.matchMedia('(max-width: 1099px)'); // as in site.css
+    var PAGE = 8;
+    var toggle = root.querySelector('.search-toggle');
+    var form = root.querySelector('form');
+    var input = root.querySelector('input');
+    var panel = root.querySelector('.search-results');
+    var list = panel.querySelector('.search-list');
+    var summary = panel.querySelector('.search-summary');
+    var more = panel.querySelector('.search-more');
+    var live = root.querySelector('.search-live');
+    var scopeBtns = Array.prototype.slice.call(panel.querySelectorAll('[data-scope]'));
+    var scope = scopeBtns.length && location.pathname.indexOf('/current/') === 0 ? 'current' : 'lts';
+    var engine = null;
+    var results = [], shown = 0, inputTimer, liveTimer;
+
+    // Splits class names at their capitals: ModalContentWindow also yields
+    // modal, content, window.
+    function tokenize(text) {
+      var out = [];
+      text.split(/[^A-Za-z0-9_]+/).forEach(function (w) {
+        if (!w) return;
+        out.push(w);
+        // No lookbehind: older Safari cannot parse it, and this file runs on every page.
+        var parts = w.replace(/([a-z0-9])(?=[A-Z])/g, '$1 ').replace(/([A-Z])(?=[A-Z][a-z])/g, '$1 ').split(' ');
+        if (parts.length > 1) out.push.apply(out, parts);
+      });
+      return out;
+    }
+    // Words that carry no meaning in a question like "how do I use a grid".
+    var STOP = {};
+    ('a an and are as at be by can do does for from get how i if in into is it its my of on or ' +
+     'should so that the their then there this to use using want was what when where which why ' +
+     'will with without you your').split(' ').forEach(function (w) { STOP[w] = true; });
+    function processTerm(term) {
+      var t = term.toLowerCase();
+      return STOP[t] ? null : t;
+    }
+
+    function load() {
+      if (!engine) {
+        engine = new Promise(function (resolve, reject) {
+          if (window.MiniSearch) return resolve();
+          var script = document.createElement('script');
+          script.src = root.getAttribute('data-script');
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
+        }).then(function () {
+          return fetch(root.getAttribute('data-index'));
+        }).then(function (response) {
+          if (!response.ok) throw new Error(response.status);
+          return response.json();
+        }).then(function (records) {
+          var search = new window.MiniSearch({
+            fields: ['title', 'apis', 'keywords', 'page', 'text', 'body'],
+            storeFields: ['url', 'title', 'page', 'label', 'line', 'text', 'body'],
+            tokenize: tokenize,
+            processTerm: processTerm,
+            searchOptions: {
+              processTerm: processTerm,
+              boost: { title: 4, apis: 3, keywords: 2, page: 1.5, text: 1, body: 0.5 },
+              // Prefix matching for the word being typed, once it has three letters.
+              prefix: function (term, i, terms) { return i === terms.length - 1 && term.length > 2; },
+              fuzzy: function (term) { return term.length > 4 ? 0.2 : false; },
+              tokenize: function (q) { return q.split(/[^A-Za-z0-9_]+/).filter(Boolean); }
+            }
+          });
+          search.addAll(records);
+          return search;
+        });
+        engine.catch(function () { engine = null; });
+      }
+      return engine;
+    }
+
+    // Whether a section matches on more than the title of its page, which
+    // every record of a page carries.
+    function ownHit(r) {
+      return Object.keys(r.match).some(function (t) {
+        return r.match[t].some(function (field) { return field !== 'page'; });
+      });
+    }
+    // The pages that match, best first: each with its own record (hits in
+    // the intro) and up to three of its sections.
+    function find(search, query, line) {
+      var options = { filter: function (r) { return !line || !r.line || r.line === line; } };
+      var hits = search.search(query, Object.assign({ combineWith: 'AND' }, options));
+      if (!hits.length) hits = search.search(query, options);
+      var pages = [], byUrl = {};
+      hits.forEach(function (r) {
+        var url = r.url.split('#')[0];
+        var p = byUrl[url];
+        if (!p) { p = byUrl[url] = { url: url, page: r.page, label: r.label, top: null, sections: [] }; pages.push(p); }
+        if (r.url === url) p.top = r;
+        else if (p.sections.length < 3 && ownHit(r)) p.sections.push(r);
+      });
+      return pages;
+    }
+
+    function isOpen() { return root.classList.contains('open'); }
+    function setOpen(open) {
+      root.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      if (open) closeMenu();
+    }
+    function hideResults() { panel.hidden = true; }
+    // Closes the results (and on small screens the panel). Focus returns to
+    // the field, or to the toggle when the field disappears.
+    function close(focus) {
+      hideResults();
+      if (SEARCH_COMPACT.matches && isOpen()) {
+        setOpen(false);
+        if (focus) toggle.focus();
+      } else if (focus) {
+        input.focus();
+      }
+    }
+
+    function announce(msg) {
+      clearTimeout(liveTimer);
+      live.textContent = '';
+      liveTimer = setTimeout(function () { live.textContent = msg; }, 500);
+    }
+    function label(sc) { return summary.getAttribute('data-' + sc); }
+
+    function run() {
+      var q = input.value.trim();
+      if (!q) { hideResults(); list.textContent = ''; return; }
+      load().then(function (search) {
+        if (q !== input.value.trim()) return;
+        var other = scope === 'lts' ? 'current' : 'lts';
+        results = find(search, q, scopeBtns.length ? scope : null);
+        var elsewhere = scopeBtns.length ? find(search, q, other).length : 0;
+        scopeBtns.forEach(function (b) {
+          var n = b.getAttribute('data-scope') === scope ? results.length : elsewhere;
+          b.querySelector('.n').textContent = '(' + n + ')';
+          b.setAttribute('aria-label', b.firstChild.textContent.trim() + ', ' + n + (n === 1 ? ' result' : ' results'));
+        });
+        shown = 0;
+        list.textContent = '';
+        var where = scopeBtns.length ? ' in the ' + label(scope) : '';
+        if (!results.length) {
+          summary.textContent = 'No results for “' + q + '”' + where + '.' +
+            (elsewhere ? ' The ' + label(other) + ' have ' + elsewhere + '.' : '');
+        } else {
+          summary.textContent = results.length + (results.length === 1 ? ' result' : ' results') + where;
+        }
+        panel.hidden = false;
+        announce(summary.textContent);
+        showMore(false);
+      }).catch(function () {
+        list.textContent = '';
+        summary.textContent = 'Search is not available right now: the search index could not be loaded.';
+        more.hidden = true;
+        panel.hidden = false;
+        announce(summary.textContent);
+      });
+    }
+
+    function showMore(focusFirst) {
+      var first = null;
+      results.slice(shown, shown + PAGE).forEach(function (p) {
+        var li = render(p);
+        first = first || li.querySelector('a');
+        list.appendChild(li);
+      });
+      shown = Math.min(shown + PAGE, results.length);
+      more.hidden = shown >= results.length;
+      if (focusFirst && first) first.focus();
+    }
+
+    function el(tag, cls, text) {
+      var e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (text) e.textContent = text;
+      return e;
+    }
+    // About 180 characters of the record around its first hit, with the
+    // matched words marked; the description when the hit is elsewhere.
+    function excerpt(r) {
+      var p = el('p', 'sr-excerpt');
+      var terms = r.terms.map(function (t) { return t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); });
+      var re = new RegExp('(' + terms.join('|') + ')', 'gi');
+      var body = r.body || '';
+      var at = body.search(re);
+      var src;
+      if (at === -1) {
+        src = r.text || body.slice(0, 180);
+      } else {
+        var from = Math.max(0, at - 60);
+        if (from > 0) from = body.indexOf(' ', from) + 1 || from;
+        src = (from > 0 ? '…' : '') + body.slice(from, from + 180) + (from + 180 < body.length ? '…' : '');
+      }
+      src.split(re).forEach(function (part, i) {
+        if (!part) return;
+        p.appendChild(i % 2 ? el('mark', null, part) : document.createTextNode(part));
+      });
+      return p;
+    }
+    // A result: the page link (label and title) with an excerpt of its intro
+    // when that matches, then the matching sections. The excerpts are outside
+    // the links so a link's name is just its title.
+    function render(p) {
+      var li = el('li');
+      var page = el('a', 'sr-page');
+      page.href = p.url;
+      if (p.label) page.appendChild(el('span', 'sr-where', p.label));
+      page.appendChild(el('span', 'sr-title', p.page));
+      li.appendChild(page);
+      if (p.top) li.appendChild(excerpt(p.top));
+      p.sections.forEach(function (s) {
+        var div = el('div', 'sr-sub');
+        var a = el('a');
+        a.href = s.url;
+        a.textContent = s.title;
+        div.appendChild(a);
+        div.appendChild(excerpt(s));
+        li.appendChild(div);
+      });
+      return li;
+    }
+
+    function links() { return Array.prototype.slice.call(list.querySelectorAll('a')); }
+
+    input.addEventListener('focus', function () {
+      load().catch(function () { /* reported when searching */ });
+      if (input.value.trim() && list.childNodes.length) panel.hidden = false;
+    });
+    input.addEventListener('input', function () {
+      clearTimeout(inputTimer);
+      inputTimer = setTimeout(run, 120);
+    });
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var first = links()[0];
+      if (first && !panel.hidden) location.href = first.href;
+    });
+    root.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        if (!panel.hidden || (SEARCH_COMPACT.matches && isOpen())) {
+          e.preventDefault();
+          e.stopPropagation();
+          close(true);
+        }
+        return;
+      }
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      var all = links();
+      var i = all.indexOf(document.activeElement);
+      if (e.target === input) {
+        if (e.key !== 'ArrowDown' || !all.length || panel.hidden) return;
+        e.preventDefault();
+        all[0].focus();
+      } else if (i !== -1) {
+        e.preventDefault();
+        if (e.key === 'ArrowDown') { if (all[i + 1]) all[i + 1].focus(); }
+        else if (i > 0) all[i - 1].focus();
+        else input.focus();
+      }
+    });
+    scopeBtns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        scope = b.getAttribute('data-scope');
+        scopeBtns.forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+        run();
+      });
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-scope') === scope));
+    });
+    more.addEventListener('click', function () { showMore(true); });
+    // A result on the current page only changes the hash; close the search.
+    list.addEventListener('click', function (e) {
+      if (e.target.closest('a')) { hideResults(); if (isOpen()) setOpen(false); }
+    });
+    toggle.addEventListener('click', function () {
+      if (isOpen()) { close(false); return; }
+      setOpen(true);
+      input.focus();
+    });
+    // Close when the visitor clicks or tabs away from the search.
+    document.addEventListener('click', function (e) {
+      if (!root.contains(e.target)) { hideResults(); if (isOpen()) setOpen(false); }
+    });
+    root.addEventListener('focusout', function (e) {
+      if (e.relatedTarget && !root.contains(e.relatedTarget)) { hideResults(); if (isOpen()) setOpen(false); }
+    });
+    // "/" focuses the search field, unless the visitor is typing elsewhere.
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey || e.defaultPrevented) return;
+      var t = e.target;
+      if (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+      e.preventDefault();
+      if (SEARCH_COMPACT.matches) setOpen(true);
+      input.focus();
+    });
+    SEARCH_COMPACT.addEventListener('change', function () { if (!SEARCH_COMPACT.matches && isOpen()) setOpen(false); });
+
+    return function () { hideResults(); if (isOpen()) setOpen(false); };
   }
 
   // Code card tabs (WAI-ARIA tabs pattern) + copy
