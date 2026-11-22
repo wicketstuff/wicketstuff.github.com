@@ -266,15 +266,15 @@ section.alt { background: var(--bg-alt); border-top: 1px solid var(--line); bord
 .module h3:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .module h3 { margin: 4px 0 6px; font-size: 18px; letter-spacing: -.01em; }
 .module p { margin: 0 0 16px; color: var(--ink-soft); font-size: 15px; flex: 1; }
-.module .artifact {
+.artifact {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
   font-family: var(--mono); font-size: 12.5px; color: var(--ink-soft);
   background: var(--bg-alt); border: 1px solid var(--line); border-radius: var(--radius-sm);
   padding: 6px 6px 6px 10px; margin-bottom: 14px; min-width: 0;
 }
-.module .artifact span { min-width: 0; overflow-wrap: anywhere; }
-.module .artifact button { flex: none; font: 600 11px var(--font); color: var(--muted); background: var(--surface); border: 1px solid var(--line-strong); border-radius: 6px; padding: 3px 8px; cursor: pointer; }
-.module .artifact button:hover { color: var(--ink); }
+.artifact span { min-width: 0; overflow-wrap: anywhere; }
+.artifact button { flex: none; font: 600 11px var(--font); color: var(--muted); background: var(--surface); border: 1px solid var(--line-strong); border-radius: 6px; padding: 3px 8px; cursor: pointer; }
+.artifact button:hover { color: var(--ink); }
 .module .links { display: flex; gap: 16px; font-size: 14px; font-weight: 600; }
 .module .links a { text-decoration: none; }
 .module .links a:hover { text-decoration: underline; }
@@ -374,7 +374,12 @@ table.versions { width: 100%; border-collapse: collapse; font-size: 15px; min-wi
 .doc-nav .back { font-size: 14px; text-decoration: none; }
 
 .prose { max-width: 760px; font-size: 16.5px; line-height: 1.7; color: var(--ink-soft); min-width: 0; overflow-wrap: break-word; }
-.prose .archive-note { background: var(--accent-soft); border: 1px solid var(--accent-line); color: var(--ink); border-radius: 10px; padding: 12px 16px; font-size: 15px; margin: 0 0 28px; }
+.prose .doc-kicker { margin: 0 0 6px; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); }
+.prose .doc-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; margin: -8px 0 32px; font-size: 15px; font-weight: 600; }
+.prose .doc-meta a { text-decoration: none; }
+.prose .doc-meta a:hover { text-decoration: underline; }
+.prose .doc-meta .artifact { margin: 0; flex: 0 1 auto; color: var(--ink-soft); font-weight: 400; }
+.prose .doc-meta .artifact span { font-size: 13px; }
 .prose h1 { font-size: clamp(32px, 5vw, 44px); line-height: 1.1; letter-spacing: -.025em; color: var(--ink); margin: 0 0 24px; }
 .prose h2 { font-size: 26px; letter-spacing: -.015em; color: var(--ink); margin: 48px 0 14px; padding-top: 8px; }
 .prose h3 { font-size: 20px; color: var(--ink); margin: 32px 0 10px; }

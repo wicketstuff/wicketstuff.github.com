@@ -1,0 +1,10 @@
+{%- assign m = include.module -%}
+      <article class="module" data-cat="{{ m.category }}" data-tags="{{ m.tags | escape }}">
+        <div class="cat">{{ site.module_categories[m.category] | escape }}</div>
+        <h3>{{ m.title | escape }}</h3>
+        <p>{{ m.description | escape }}</p>
+        {%- if m.artifactId %}
+        <div class="artifact"><span>{{ m.artifactId }}</span><button class="js-only" type="button">Copy</button></div>
+        {%- endif %}
+        <div class="links"><a href="{{ m.url }}">Docs</a><a href="https://github.com/wicketstuff/core/tree/{{ site.data.core.ref }}/{{ m.source_dir }}">Source</a></div>
+      </article>
