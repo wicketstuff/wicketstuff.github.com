@@ -139,7 +139,8 @@
       text.split(/[^A-Za-z0-9_]+/).forEach(function (w) {
         if (!w) return;
         out.push(w);
-        var parts = w.split(/(?=[A-Z][a-z])|(?<=[a-z0-9])(?=[A-Z])/);
+        // No lookbehind: older Safari cannot parse it, and this file runs on every page.
+        var parts = w.replace(/([a-z0-9])(?=[A-Z])/g, '$1 ').replace(/([A-Z])(?=[A-Z][a-z])/g, '$1 ').split(' ');
         if (parts.length > 1) out.push.apply(out, parts);
       });
       return out;
