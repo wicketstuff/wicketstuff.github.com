@@ -1,4 +1,40 @@
 <!DOCTYPE html>
+<!--
+  Maintaining this page
+  =====================
+  Plain HTML, CSS and JS: no build step. assets/site.css holds all styles
+  (colors are variables at the top), assets/site.js the behavior.
+  _layouts/default.html is the Jekyll layout for the wicketsecurity/ docs.
+
+  On every release, search for the old version numbers (now 11.0.0 and
+  10.12.0) and replace them. They appear in: the hero release banner, the
+  Maven and Gradle hero snippets, "How it works", get-started steps 1 and 2,
+  and the version table with its note below it.
+
+  Adding a module: copy a card inside #module-list and change its values.
+    <article class="module" data-cat="js" data-tags="extra search words">
+      <div class="cat">JavaScript libraries</div>
+      <h3>Module name</h3>
+      <p>One or two sentences on what it does.</p>
+      <div class="artifact"><span>wicketstuff-artifact-id</span><button class="js-only" type="button">Copy</button></div>
+      <div class="links"><a href="https://github.com/wicketstuff/core/wiki/Page">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/module-dir">Source</a></div>
+    </article>
+  - data-cat and .cat must match one of the filter chips:
+      ui        Components
+      js        JavaScript libraries
+      data      Data & reporting
+      security  Security
+      web       REST & web
+      infra     Runtime
+      dev       Developer tools
+  - The artifact id is shown as is; when the groupId is not org.wicketstuff,
+    write groupId:artifactId. Leave out the .artifact line for modules that
+    are not published as a dependency.
+  - data-tags is optional: words people may search for that are not in the
+    card text. Search, category counts and copy buttons work from the card.
+  - The first 12 cards in source order are shown before "Show all"; keep the
+    most-used modules at the top.
+-->
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -41,7 +77,7 @@
 
 <main id="main">
 
-<!-- Hero. Update the release badge and the version numbers in #start and #versions on every release. -->
+<!-- Hero. See "Maintaining this page" at the top for where the version numbers live. -->
 <div class="hero">
   <div class="wrap">
     <div>
