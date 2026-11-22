@@ -1,21 +1,62 @@
 {%- comment -%}
   The availability strip on a module page: for every release line whose BOM
   was read (_data/availability.yml, written by scripts/release-lines.sh),
-  whether that BOM has the module's artifact. Renders nothing without data or
-  when no BOM has the artifact. Usage: {% include availability.html id=page.artifactId %}
+  whether that BOM has the module's artifact:
+    yes         the line's BOM has it
+    unreleased  not in the BOM, but the module has docs on the line's branch
+                (only the LTS and current lines, whose branches fetch-docs.sh
+                reads), so it ships with that line's next release
+    removed     not in the BOM, but an earlier line's BOM had it
+    no          none of the above
+  Renders nothing without data, or when no line has the module or will have it.
+  Usage: {% include availability.html id=page.artifactId dir=page.dir %}
 {%- endcomment -%}
 {%- assign av = site.data.availability -%}
 {%- if include.id and av.lines and av.lines.size > 0 -%}
 {%- include artifact-key.html id=include.id -%}
 {%- assign av_in = av.artifacts[artifact_key] -%}
-{%- if av_in and av_in.size > 0 %}
+{%- assign av_name = include.dir | split: "/" | last -%}
+{%- comment -%} Docs on the LTS branch: a /modules/ page copied from that branch, not from docs/removed/. {%- endcomment -%}
+{%- assign av_url = "/modules/" | append: av_name | append: "/" -%}
+{%- assign av_lts_page = site.pages | where: "url", av_url | first -%}
+{%- assign av_on_lts = false -%}
+{%- if av_lts_page and av_lts_page.source_ref == site.data.core.lts_ref -%}
+  {%- assign av_removed_path = av_lts_page.source_path | slice: 0, 13 -%}
+  {%- unless av_removed_path == "docs/removed/" %}{% assign av_on_lts = true %}{% endunless -%}
+{%- endif -%}
+{%- assign av_url = "/current" | append: av_url -%}
+{%- assign av_current_page = site.pages | where: "url", av_url | first -%}
+{%- assign av_on_current = false -%}
+{%- if av_current_page and site.data.core.current_ref %}{% assign av_on_current = true %}{% endif -%}
+{%- assign av_states = "" | split: "" -%}
+{%- assign av_show = false -%}
+{%- assign av_seen = false -%}
+{%- for w in av.lines -%}
+  {%- include release-line.html wicket=w -%}
+  {%- assign av_on_branch = false -%}
+  {%- if line_status == "lts" or line_status == "current" -%}
+    {%- if av_on_lts and line.branch == site.data.core.lts_ref %}{% assign av_on_branch = true %}{% endif -%}
+    {%- if av_on_current and line.branch == site.data.core.current_ref %}{% assign av_on_branch = true %}{% endif -%}
+  {%- endif -%}
+  {%- if av_in contains w -%}
+    {%- assign av_states = av_states | push: "yes" %}{% assign av_seen = true %}{% assign av_show = true -%}
+  {%- elsif av_on_branch -%}
+    {%- assign av_states = av_states | push: "unreleased" %}{% assign av_show = true -%}
+  {%- elsif av_seen -%}
+    {%- assign av_states = av_states | push: "removed" -%}
+  {%- else -%}
+    {%- assign av_states = av_states | push: "no" -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- if av_show %}
     <ul class="availability" aria-label="In the Wicket Stuff BOM of each release line">
-      {%- assign av_seen = false -%}
       {%- for w in av.lines -%}
-        {%- include release-line.html wicket=w %}
+        {%- include release-line.html wicket=w -%}
+        {%- assign av_state = av_states[forloop.index0] %}
       <li><a href="/versions/{{ w }}/">{{ line_label }}</a>
-        {%- if av_in contains w %}{% assign av_seen = true %} <span class="av-yes" aria-hidden="true">✓</span><span class="visually-hidden">available</span>
-        {%- elsif av_seen %} <span class="av-removed">removed</span>
+        {%- if av_state == "yes" %} <span class="av-yes" aria-hidden="true">✓</span><span class="visually-hidden">available</span>
+        {%- elsif av_state == "unreleased" %} <span class="av-unreleased" title="On the {{ line.branch }} branch, not in the {{ line.version }} BOM yet: ships with the next {{ w }}.x release">unreleased</span>
+        {%- elsif av_state == "removed" %} <span class="av-removed">removed</span>
         {%- else %} <span class="av-no" aria-hidden="true">–</span><span class="visually-hidden">not available</span>{% endif %}</li>
       {%- endfor %}
     </ul>

@@ -99,7 +99,7 @@ layout: default
       {%- endif %}
       <a href="https://github.com/wicketstuff/core/edit/{{ page.source_ref }}/{{ page.source_path }}">Edit this page</a>
     </div>
-    {%- if is_module and page.name == "index.md" %}{% include availability.html id=page.artifactId %}{% endif %}
+    {%- if is_module and page.name == "index.md" %}{% include availability.html id=page.artifactId dir=page.dir %}{% endif %}
     {{ content }}
   </article>
 </div>

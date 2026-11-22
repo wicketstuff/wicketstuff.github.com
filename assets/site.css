@@ -496,6 +496,7 @@ table.versions { width: 100%; border-collapse: collapse; font-size: 15px; min-wi
 .prose .availability a:hover { color: var(--accent-ink); text-decoration: underline; }
 .prose .availability .av-yes { color: var(--accent-ink); font-weight: 700; }
 .prose .availability .av-removed { font-style: italic; }
+.prose .availability .av-unreleased { display: inline-block; margin-left: 2px; padding: 0 7px; border: 1px dashed var(--line-strong); border-radius: 999px; background: var(--bg-alt); color: var(--muted); font-size: 12px; font-weight: 600; line-height: 1.6; cursor: help; }
 .prose .lead { font-size: 18.5px; color: var(--ink-soft); margin: -8px 0 28px; }
 .prose table.facts { display: table; width: 100%; margin: 0 0 8px; }
 .prose .facts th { width: 34%; font-weight: 600; color: var(--ink); background: var(--bg-alt); }
