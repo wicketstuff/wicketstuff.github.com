@@ -4,9 +4,18 @@
 # The long-term support (LTS) line is the site's main documentation; the
 # newest feature line is published next to it:
 #   LTS branch      <module>/docs/**  ->  modules/<name>/          (<name> = directory without "-parent")
-#                   docs/**           ->  contribute/
+#                   docs/**           ->  contribute/              (without docs/removed/)
 #   current branch  <module>/docs/**  ->  current/modules/<name>/
+#                                         modules/<name>/          (modules not on the LTS branch)
+#   both branches   docs/removed/<name>/**  ->  modules/<name>/    (modules on neither branch; current first)
 #   both branches                     ->  _data/core.yml           (labels and refs for the layouts)
+# A removed module keeps its docs in docs/removed/<name>/ with removed_in,
+# last_release and optionally replacement in the front matter of index.md;
+# its page stays at /modules/<name>/ with a banner and is listed under
+# "Removed modules" instead of in the catalog.
+#
+# Then scripts/release-lines.sh generates the release-line pages and the
+# module availability data.
 #
 # The LTS branch comes from releases.lts.branch in _config.yml (override with
 # LTS_REF). The current feature branch is the highest wicket-N.x branch in
@@ -57,9 +66,9 @@ copy_page() { # <src file> <dest file> <ref> <path in core>
     { print }' "$1" > "$2"
 }
 
-copy_tree() { # <docs dir> <dest dir> <ref> <path of the docs dir in core>
+copy_tree() { # <docs dir> <dest dir> <ref> <path of the docs dir in core> [subdirectory to skip]
   mkdir -p "$2"
-  (cd "$1" && find . -type f) | while read -r f; do
+  (cd "$1" && if [ -n "${5:-}" ]; then find . -path "./$5" -prune -o -type f -print; else find . -type f; fi) | while read -r f; do
     f="${f#./}"
     mkdir -p "$2/$(dirname "$f")"
     case "$f" in
@@ -69,14 +78,28 @@ copy_tree() { # <docs dir> <dest dir> <ref> <path of the docs dir in core>
   done
 }
 
-copy_modules() { # <core checkout> <dest dir> <ref> -> prints the number of modules
+copy_modules() { # <core checkout> <dest dir> <ref> [only-new] -> prints the number of modules
   local count=0
   for docs in "$1"/*/docs; do
     [ -f "$docs/index.md" ] || continue
     local dir name
     dir="$(basename "$(dirname "$docs")")"
     name="${dir%-parent}"
+    [ -n "${4:-}" ] && [ -e "$2/$name" ] && continue
     copy_tree "$docs" "$2/$name" "$3" "$dir/docs"
+    count=$((count + 1))
+  done
+  echo "$count"
+}
+
+copy_removed() { # <core checkout> <dest dir> <ref> -> prints the number of modules
+  local count=0
+  for docs in "$1"/docs/removed/*; do
+    [ -f "$docs/index.md" ] || continue
+    local name
+    name="$(basename "$docs")"
+    [ -e "$2/$name" ] && continue
+    copy_tree "$docs" "$2/$name" "$3" "docs/removed/$name"
     count=$((count + 1))
   done
   echo "$count"
@@ -91,7 +114,7 @@ if [ "$lts_count" -lt 10 ]; then
   echo "Only $lts_count module docs found on $lts_ref; refusing to build a site without them." >&2
   exit 1
 fi
-[ -d "$lts_src/docs" ] && copy_tree "$lts_src/docs" "$site/contribute" "$lts_ref" "docs"
+[ -d "$lts_src/docs" ] && copy_tree "$lts_src/docs" "$site/contribute" "$lts_ref" "docs" removed
 echo "Copied docs for $lts_count modules from wicketstuff/core $lts_ref (LTS)."
 
 if [ -z "$current_ref" ] && [ -z "${2:-}" ]; then
@@ -105,9 +128,15 @@ if [ -n "$current_ref" ] && [ "$current_ref" != "$lts_ref" ]; then
   current_src="$(checkout "$current_ref" "${2:-}")"
   current_count="$(copy_modules "$current_src" "$site/current/modules" "$current_ref")"
   echo "Copied docs for $current_count modules from wicketstuff/core $current_ref (current)."
+  new_count="$(copy_modules "$current_src" "$site/modules" "$current_ref" only-new)"
+  if [ "$new_count" -gt 0 ]; then echo "Published $new_count modules that are only on $current_ref under modules/."; fi
+  removed_count="$(copy_removed "$current_src" "$site/modules" "$current_ref")"
+  if [ "$removed_count" -gt 0 ]; then echo "Copied docs for $removed_count removed modules from $current_ref docs/removed/."; fi
 else
   current_ref=""
 fi
+removed_count="$(copy_removed "$lts_src" "$site/modules" "$lts_ref")"
+if [ "$removed_count" -gt 0 ]; then echo "Copied docs for $removed_count removed modules from $lts_ref docs/removed/."; fi
 
 {
   echo "lts_ref: \"$lts_ref\""
@@ -117,3 +146,5 @@ fi
     echo "current_label: \"$(label "$current_ref")\""
   fi
 } > "$site/_data/core.yml"
+
+"$site/scripts/release-lines.sh"

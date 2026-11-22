@@ -1,0 +1,17 @@
+{%- comment -%}
+  Looks up a release line in "releases" (_config.yml) by Wicket major and
+  sets line (its entry, or nil), line_status (lts, current or ended) and
+  line_label ("10.x LTS", "11.x"). Usage: {% include release-line.html wicket="10" %}
+{%- endcomment -%}
+{%- assign line = nil -%}{%- assign line_status = nil -%}{%- assign line_label = nil -%}
+{%- if include.wicket -%}
+  {%- if site.releases.lts.wicket == include.wicket -%}
+    {%- assign line = site.releases.lts -%}{%- assign line_status = "lts" -%}
+  {%- elsif site.releases.current.wicket == include.wicket -%}
+    {%- assign line = site.releases.current -%}{%- assign line_status = "current" -%}
+  {%- else -%}
+    {%- assign line = site.releases.ended | where: "wicket", include.wicket | first -%}{%- assign line_status = "ended" -%}
+  {%- endif -%}
+  {%- assign line_label = include.wicket | append: ".x" -%}
+  {%- if line_status == "lts" %}{% assign line_label = line_label | append: " LTS" %}{% endif -%}
+{%- endif -%}

@@ -1,0 +1,7 @@
+{%- comment -%}
+  A removed module's replacement (front matter "replacement"): a module name
+  links to that module's page, anything else is rendered as inline Markdown.
+{%- endcomment -%}
+{%- assign rp_url = "/modules/" | append: include.value | append: "/" -%}
+{%- assign rp_page = site.pages | where: "url", rp_url | first -%}
+{%- if rp_page %}<a href="{{ rp_page.url }}">{{ rp_page.title | escape }}</a>{% else %}{{ include.value | markdownify | remove: "<p>" | remove: "</p>" | strip }}{% endif -%}

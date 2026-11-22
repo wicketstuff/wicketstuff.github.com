@@ -1,0 +1,23 @@
+{%- comment -%}
+  The availability strip on a module page: for every release line whose BOM
+  was read (_data/availability.yml, written by scripts/release-lines.sh),
+  whether that BOM has the module's artifact. Renders nothing without data or
+  when no BOM has the artifact. Usage: {% include availability.html id=page.artifactId %}
+{%- endcomment -%}
+{%- assign av = site.data.availability -%}
+{%- if include.id and av.lines and av.lines.size > 0 -%}
+{%- include artifact-key.html id=include.id -%}
+{%- assign av_in = av.artifacts[artifact_key] -%}
+{%- if av_in and av_in.size > 0 %}
+    <ul class="availability" aria-label="In the Wicket Stuff BOM of each release line">
+      {%- assign av_seen = false -%}
+      {%- for w in av.lines -%}
+        {%- include release-line.html wicket=w %}
+      <li><a href="/versions/{{ w }}/">{{ line_label }}</a>
+        {%- if av_in contains w %}{% assign av_seen = true %} <span class="av-yes" aria-hidden="true">✓</span><span class="visually-hidden">available</span>
+        {%- elsif av_seen %} <span class="av-removed">removed</span>
+        {%- else %} <span class="av-no" aria-hidden="true">–</span><span class="visually-hidden">not available</span>{% endif %}</li>
+      {%- endfor %}
+    </ul>
+{%- endif -%}
+{%- endif -%}

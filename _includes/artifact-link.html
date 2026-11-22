@@ -1,0 +1,13 @@
+{%- comment -%}
+  Renders a groupId:artifactId, linked to its module page when a module's
+  front matter names that artifact. Usage: {% include artifact-link.html id="org.wicketstuff:wicketstuff-select2" %}
+{%- endcomment -%}
+{%- assign al_page = nil -%}
+{%- assign al_modules = site.pages | where: "section", "modules" | where: "name", "index.md" -%}
+{%- for m in al_modules -%}
+  {%- if m.artifactId -%}
+    {%- include artifact-key.html id=m.artifactId -%}
+    {%- if artifact_key == include.id %}{% assign al_page = m %}{% break %}{% endif -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- if al_page %}<a href="{{ al_page.url }}"><code>{{ include.id }}</code></a> {{ al_page.title | escape }}{% else %}<code>{{ include.id }}</code>{% endif -%}
