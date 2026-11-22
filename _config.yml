@@ -12,6 +12,27 @@ kramdown:
   input: GFM
   hard_wrap: false
 
+# Release lines shown on the homepage. "lts" is the long-term support line:
+# its branch provides the site's main documentation (/modules/) and its BOM
+# is the default in the snippets. "current" is the newest feature line; its
+# docs are published under /current/ (scripts/fetch-docs.sh finds the newest
+# wicket-N.x branch by itself). Update the versions on every release, and
+# move "lts" when a new LTS line starts (Wicket 14, July 2027).
+releases:
+  lts:
+    version: 10.12.0
+    wicket: "10"
+    java: "17"
+    servlet: Jakarta EE 10 (Servlet 6.0)
+    branch: wicket-10.x
+    supported_until: July 2027
+  current:
+    version: 11.0.0
+    wicket: "11"
+    java: "21"
+    servlet: Jakarta EE 11 (Servlet 6.1)
+    branch: wicket-11.x
+
 # Modules shown first in the homepage catalog (before "Show all"), by
 # directory name without "-parent". The rest follow alphabetically.
 featured:
@@ -40,6 +61,8 @@ module_categories:
 defaults:
   - scope: { path: "modules" }
     values: { layout: doc, section: modules }
+  - scope: { path: "current" }
+    values: { layout: doc, section: current }
   - scope: { path: "contribute" }
     values: { layout: doc, section: contribute }
 

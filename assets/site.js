@@ -65,6 +65,25 @@
     syncThemeBtn();
   }
 
+  // BOM version switch: the long-term support line is the default; the
+  // choice is remembered like the theme.
+  var bomButtons = document.querySelectorAll('.bom-switch [data-line]');
+  function setLine(line, store) {
+    document.querySelectorAll('[data-bom]').forEach(function (el) {
+      el.textContent = el.getAttribute(line === 'current' ? 'data-current' : 'data-lts');
+    });
+    bomButtons.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-line') === line)); });
+    if (store) { try { localStorage.setItem('bom-line', line); } catch (e) { /* not stored */ } }
+  }
+  if (bomButtons.length) {
+    bomButtons.forEach(function (b) {
+      b.addEventListener('click', function () { setLine(b.getAttribute('data-line'), true); });
+    });
+    var savedLine = null;
+    try { savedLine = localStorage.getItem('bom-line'); } catch (e) { /* ignore */ }
+    if (savedLine === 'current') setLine('current', false);
+  }
+
   // Mobile menu
   var menuBtn = document.querySelector('.menu-btn');
   var nav = document.getElementById('nav');

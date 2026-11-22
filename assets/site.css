@@ -195,6 +195,15 @@ html:not(.js) .js-only { display: none !important; }
 .stats strong { font-size: 28px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
 .stats span { font-size: 13px; color: var(--muted); }
 
+/* ---------- BOM line switch ---------- */
+
+.hero-code { min-width: 0; }
+.bom-switch { display: inline-flex; gap: 2px; padding: 3px; margin-bottom: 12px; background: var(--bg-alt); border: 1px solid var(--line); border-radius: 10px; }
+.bom-switch button { font: 600 13px var(--font); color: var(--muted); background: none; border: 0; border-radius: 7px; padding: 5px 12px; cursor: pointer; }
+.bom-switch button:hover { color: var(--ink); }
+.bom-switch button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0, 0, 0, .12); }
+.step .bom-switch { margin-bottom: 14px; }
+
 /* ---------- Code card ---------- */
 
 .code-card { background: var(--code-bg); color: var(--code-ink); border-radius: var(--radius); box-shadow: 0 30px 60px -30px rgba(40, 20, 0, .45); overflow: hidden; border: 1px solid rgba(255,255,255,.06); }
@@ -374,6 +383,11 @@ table.versions { width: 100%; border-collapse: collapse; font-size: 15px; min-wi
 .doc-nav .back { font-size: 14px; text-decoration: none; }
 
 .prose { max-width: 760px; font-size: 16.5px; line-height: 1.7; color: var(--ink-soft); min-width: 0; overflow-wrap: break-word; }
+.prose .version-switch { display: inline-flex; gap: 2px; padding: 3px; margin: 0 0 20px; background: var(--bg-alt); border: 1px solid var(--line); border-radius: 10px; font-size: 14px; }
+.prose .version-switch a { padding: 4px 12px; border-radius: 7px; color: var(--muted); text-decoration: none; font-weight: 600; }
+.prose .version-switch a:hover { color: var(--ink); }
+.prose .version-switch a[aria-current="page"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0, 0, 0, .12); }
+.prose .version-note { background: var(--accent-soft); border: 1px solid var(--accent-line); color: var(--ink); border-radius: 10px; padding: 12px 16px; font-size: 15px; margin: 0 0 24px; }
 .prose .doc-kicker { margin: 0 0 6px; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); }
 .prose .doc-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; margin: -8px 0 32px; font-size: 15px; font-weight: 600; }
 .prose .doc-meta a { text-decoration: none; }
