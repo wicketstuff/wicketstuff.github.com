@@ -1,114 +1,699 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-	<meta charset="utf-8" />
-	<title>Wicket Stuff-There's more to Apache Wicket</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="Wicket Stuff is a collection of open source projects for the Apache Wicket web framework created and maintained by the Wicket community">
-	<meta name="author" content="Wicket Stuff Committers">
-
-	<!-- Le styles -->
-	<link href="bootstrap/css/bootstrap.css" rel="stylesheet">
-	<style type="text/css">
-	  body {
-		padding-top: 20px;
-		padding-bottom: 40px;
-	  }
-	</style>
-
-	<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
-	<!--[if lt IE 9]>
-	  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-	<![endif]-->
-
-	<!-- Le fav and touch icons -->
-	<link rel="shortcut icon" href="../assets/ico/favicon.ico" />
-	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png" />
-	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png" />
-	<link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png" />
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wicket Stuff · There's more to Apache Wicket</title>
+  <meta name="description" content="Wicket Stuff is a collection of open source components and integrations for the Apache Wicket web framework, created and maintained by the Wicket community and released in step with Wicket.">
+  <meta name="author" content="Wicket Stuff committers">
+  <meta property="og:title" content="Wicket Stuff · There's more to Apache Wicket">
+  <meta property="og:description" content="Community-built components and integrations for Apache Wicket, released in step with every Wicket version.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://wicketstuff.org/">
+  <meta name="theme-color" content="#e8590c">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/site.css">
+  <script>document.documentElement.classList.add('js')</script>
 </head>
-
 <body>
-<!--
-	<div class="navbar navbar-fixed-top">
-	  <div class="navbar-inner">
-		<div class="container">
-		  <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-		  </a>
-		  <a class="brand" href="#">Wicket Stuff</a>
-		  <div class="nav-collapse">
-			<ul class="nav">
-			  <li class="active"><a href="#">Home</a></li>
-			  <li><a href="#about">About</a></li>
-			  <li><a href="#contact">Contact</a></li>
-			</ul>
-		  </div>
-		</div>
-	  </div>
-	</div>
+<a class="skip" href="#main">Skip to content</a>
 
--->
-	<div class="container">
-		<div class="hero-unit">
-			<h1>Wicket Stuff <small>There's more to Apache Wicket</h1>
-			<p>
-				Wicket Stuff is a collection of open source projects for the <a
-				href="http://wicket.apache.org">Apache Wicket</a> web framework
-				created and maintained by the Wicket community.</p>
-		</div>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="./">
+      <img src="assets/favicon.svg" alt="" width="30" height="30">
+      Wicket Stuff
+    </a>
+    <button class="menu-btn js-only" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="nav" id="nav" aria-label="Main">
+      <a href="#modules">Modules</a>
+      <a href="#start">Get started</a>
+      <a href="#versions">Versions</a>
+      <a href="#help">Help</a>
+      <a href="#contribute">Contribute</a>
+      <a class="gh" href="https://github.com/wicketstuff/core">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </nav>
+  </div>
+</header>
 
-		<div class="row">
-			<div class="span4">
-				<h2>Want to Learn More?</h2>
-				<p>All documentation concerning Wicket Stuff and its projects is located at the <a target="_blank" href="https://github.com/wicketstuff/core/wiki">Wicket Stuff WIKI</a>.</p>
-				<p>Looking for the <a target="_blank" href="https://cwiki.apache.org/WICKET">Apache Wicket WIKI</a>?</p>
-				<p><a target="_blank" class="btn btn-primary" href="https://github.com/wicketstuff/core/wiki">Go to our WIKI &raquo;</a></p>
-			</div>
-			<div class="span4">
-				<h2>Need Help?</h2>
-				<p>We are here to help!</p>
-				<ul>
-					<li>Join us on IRC at ##wicket on irc.freenode.net</li>
-					<li>Search our mailing list archives</li>
-					<li>Ask a question on the <a target="_blank" href="http://wicket.apache.org/help/email.html#user">users list</a> or at <a target="_blank" href="https://stackoverflow.com/questions/tagged/wicketstuff">Stackoverflow.com</a></li>
-					<li>Suggest improvements for Apache Wicket on the <a target="_blank" href="http://wicket.apache.org/help/email.html#dev">developers list</a>.</li>
-					<li>Report security related issues on the <a target="_blank" href="http://wicket.apache.org/help/email.html#security">private list</a>.</li>
-				</ul>
-			</div>
-			<div class="span4">
-				<h2>Need to Report a Bug?</h2>
-				<p>Help us help you:</p>
-				<ol>
-					<li>Reproduce the bug with the least amount of code</li>
-					<li>Create a unit test or a <a target="_blank" href="http://wicket.apache.org/start/quickstart.html">reproducer app</a> that shows the bug</li>
-					<li>Fix the bug and create a patch / Pull Request</li>
-					<li>Attach the result of step 1, 2 or 3 to a bug report in:
-						<ul>
-							<li><a target="_blank" href="https://github.com/wicketstuff/core/issues/new">Github tracker</a>: for Wicket Stuff related bugs</li>
-							<li><a target="_blank" href="https://issues.apache.org/jira/browse/WICKET">Apache Wicket JIRA</a>: for Apache Wicket related bugs</li>
-						</ul>
-					</li>
-					<li>Profit!</li>
-				</ol>
-				<p>
-					<a target="_blank" class="btn btn-primary" href="https://github.com/wicketstuff/core/issues">View issues &raquo;</a>
-				</p>
-			</div>
-		</div>
-		<hr />
-		<footer>
-			<p>&copy; Wicket Stuff committers 2019</p>
-			<p>Apache®, Apache Wicket, and the orange Wicket logo are either registered trademarks or trademarks of the Apache Software Foundation in the United States and/or other countries.</p>
-		</footer>
-	</div>
+<main id="main">
 
-<!-- Le javascript
-================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-<script src="jquery/jquery.js"></script>
-<script src="bootstrap/js/bootstrap.min.js"></script>
+<!-- Hero. Update the release badge and the version numbers in #start and #versions on every release. -->
+<div class="hero">
+  <div class="wrap">
+    <div>
+      <a class="eyebrow" href="https://github.com/wicketstuff/core/releases/tag/wicketstuff-core-11.0.0"><span class="dot"></span>Wicket Stuff 11.0.0 is out, for Apache Wicket 11</a>
+      <h1>There's more to <em>Apache&nbsp;Wicket</em></h1>
+      <p class="lead">Wicket Stuff is a collection of open source components and integrations for the <a href="https://wicket.apache.org">Apache Wicket</a> web framework. Created by the Wicket community, released in step with every Wicket version, and available from Maven Central.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="#modules">Browse the modules</a>
+        <a class="btn btn-ghost" href="#start">Get started</a>
+      </div>
+      <ul class="stats">
+        <li><strong data-module-count>50+</strong><span>modules</span></li>
+        <li><strong>125+</strong><span>contributors</span></li>
+        <li><strong>10 &amp; 11</strong><span>Wicket lines supported</span></li>
+        <li><strong>ASL 2.0</strong><span>for most Wicket Stuff code</span></li>
+      </ul>
+    </div>
+
+    <div class="code-card" data-tabs>
+      <div class="bar">
+        <i></i><i></i><i></i>
+        <div class="tabs js-only" role="tablist" aria-label="Build file">
+          <button class="tab" type="button" role="tab" aria-selected="true" aria-controls="hero-maven" id="tab-hero-maven">pom.xml</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="hero-gradle" id="tab-hero-gradle" tabindex="-1">build.gradle.kts</button>
+        </div>
+        <button class="copy js-only" type="button" data-copy-panel>Copy</button>
+      </div>
+<pre id="hero-maven" data-tabpanel aria-labelledby="tab-hero-maven"><code><span class="t-com">&lt;!-- One BOM keeps every module in line --&gt;</span>
+<span class="t-tag">&lt;dependencyManagement&gt;</span>
+  <span class="t-tag">&lt;dependencies&gt;</span>
+    <span class="t-tag">&lt;dependency&gt;</span>
+      <span class="t-tag">&lt;groupId&gt;</span>org.wicketstuff<span class="t-tag">&lt;/groupId&gt;</span>
+      <span class="t-tag">&lt;artifactId&gt;</span>wicketstuff-bom<span class="t-tag">&lt;/artifactId&gt;</span>
+      <span class="t-tag">&lt;version&gt;</span><span class="t-str">11.0.0</span><span class="t-tag">&lt;/version&gt;</span>
+      <span class="t-tag">&lt;type&gt;</span>pom<span class="t-tag">&lt;/type&gt;</span>
+      <span class="t-tag">&lt;scope&gt;</span>import<span class="t-tag">&lt;/scope&gt;</span>
+    <span class="t-tag">&lt;/dependency&gt;</span>
+  <span class="t-tag">&lt;/dependencies&gt;</span>
+<span class="t-tag">&lt;/dependencyManagement&gt;</span>
+
+<span class="t-com">&lt;!-- Then pick what you need, no versions --&gt;</span>
+<span class="t-tag">&lt;dependencies&gt;</span>
+  <span class="t-tag">&lt;dependency&gt;</span>
+    <span class="t-tag">&lt;groupId&gt;</span>org.wicketstuff<span class="t-tag">&lt;/groupId&gt;</span>
+    <span class="t-tag">&lt;artifactId&gt;</span>wicketstuff-select2<span class="t-tag">&lt;/artifactId&gt;</span>
+  <span class="t-tag">&lt;/dependency&gt;</span>
+<span class="t-tag">&lt;/dependencies&gt;</span></code></pre>
+<pre id="hero-gradle" data-tabpanel aria-labelledby="tab-hero-gradle"><code><span class="t-tag">dependencies</span> {
+    <span class="t-com">// One BOM keeps every module in line</span>
+    implementation(platform(<span class="t-str">"org.wicketstuff:wicketstuff-bom:11.0.0"</span>))
+
+    <span class="t-com">// Then pick what you need, no versions</span>
+    implementation(<span class="t-str">"org.wicketstuff:wicketstuff-select2"</span>)
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<section id="about">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">How it works</div>
+      <h2>Community projects, one release train</h2>
+      <p>Wicket Stuff is a container for Wicket-related projects. Authors bring the code; the release process makes sure every project ships for every Wicket release.</p>
+    </div>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></div>
+        <h3>Released in step with Wicket</h3>
+        <p>The version tells you which Wicket it is built for. <code>11.0.0</code> pairs with Wicket 11, <code>10.12.0</code> with Wicket 10. No compatibility guesswork.</p>
+      </div>
+      <div class="pillar">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></div>
+        <h3>One BOM for everything</h3>
+        <p>Import <code>wicketstuff-bom</code> and declare modules without a version. All artifacts are on Maven Central, almost all under <code>org.wicketstuff</code>.</p>
+      </div>
+      <div class="pillar">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 010 7"/><path d="M18.5 14.8c1.6.8 2.7 2.6 3 5.2"/></svg></div>
+        <h3>Open to every Wicket project</h3>
+        <p>The bar is low on purpose: if it is related to Wicket, it is welcome. Wicket Stuff code is mostly Apache License 2.0; integrations bring in third-party libraries under their own licenses. Most modules ship with a runnable examples application.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="modules" class="alt">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">Modules</div>
+      <h2>Find the piece you are missing</h2>
+      <p>Components, JavaScript integrations, security, page stores, serializers and developer tools. Artifact ids without a group live under <code>org.wicketstuff</code>.</p>
+    </div>
+
+    <div class="catalog-tools js-only">
+      <label class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input type="search" id="module-search" placeholder="Search modules, e.g. redis, grid, editor" aria-label="Search modules" autocomplete="off">
+      </label>
+      <div class="chips" role="group" aria-label="Filter by category">
+        <button class="chip" type="button" data-filter="all" aria-pressed="true">All</button>
+        <button class="chip" type="button" data-filter="ui" aria-pressed="false">Components</button>
+        <button class="chip" type="button" data-filter="js" aria-pressed="false">JavaScript libraries</button>
+        <button class="chip" type="button" data-filter="data" aria-pressed="false">Data &amp; reporting</button>
+        <button class="chip" type="button" data-filter="security" aria-pressed="false">Security</button>
+        <button class="chip" type="button" data-filter="web" aria-pressed="false">REST &amp; web</button>
+        <button class="chip" type="button" data-filter="infra" aria-pressed="false">Runtime</button>
+        <button class="chip" type="button" data-filter="dev" aria-pressed="false">Developer tools</button>
+      </div>
+    </div>
+
+    <div class="modules" id="module-list">
+      <article class="module" data-cat="js" data-tags="dropdown choice autocomplete">
+        <div class="cat">JavaScript libraries</div>
+        <h3>Select2</h3>
+        <p>Searchable select boxes with tagging and Ajax-loaded options, based on Select2.</p>
+        <div class="artifact"><span>wicketstuff-select2</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/tree/master/select2-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="js" data-tags="dialog datepicker tabs kendo calendar">
+        <div class="cat">JavaScript libraries</div>
+        <h3>jQuery UI &amp; Kendo UI</h3>
+        <p>Wicket components for jQuery UI widgets, plus Kendo UI widgets, themes and a full calendar. The Kendo grid and scheduler need a commercially licensed Kendo UI build.</p>
+        <div class="artifact"><span>wicketstuff-jquery-ui</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/tree/master/wicketstuff-jquery-ui-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="data" data-tags="table treegrid">
+        <div class="cat">Data &amp; reporting</div>
+        <h3>InMethod Grid</h3>
+        <p>Advanced data grid and tree grid with resizable, reorderable columns.</p>
+        <div class="artifact"><span>wicketstuff-inmethod-grid</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/InMethodGrid">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/inmethod-grid-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="security" data-tags="login auth">
+        <div class="cat">Security</div>
+        <h3>Apache Shiro</h3>
+        <p>Authentication and authorization for Wicket with Apache Shiro.</p>
+        <div class="artifact"><span>wicketstuff-shiro</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/ShiroSecurity">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/shiro-security">Source</a></div>
+      </article>
+      <article class="module" data-cat="infra" data-tags="cluster session cache hazelcast cassandra ignite memcached">
+        <div class="cat">Runtime</div>
+        <h3>Page Stores</h3>
+        <p>IPageStore implementations for Redis, Hazelcast, Cassandra, Ignite and Memcached, for clustered deployments.</p>
+        <div class="artifact"><span>wicketstuff-datastore-redis</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/DataStores">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/datastores-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="js" data-tags="table grid">
+        <div class="cat">JavaScript libraries</div>
+        <h3>DataTables</h3>
+        <p>Integration of the DataTables jQuery plugin for sortable, searchable tables.</p>
+        <div class="artifact"><span>wicketstuff-datatables</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/DataTables">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/datatables-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="js" data-tags="editor html wysiwyg">
+        <div class="cat">JavaScript libraries</div>
+        <h3>TinyMCE 6</h3>
+        <p>WYSIWYG rich-text editing with TinyMCE. Licensed under the LGPL.</p>
+        <div class="artifact"><span>wicketstuff-tinymce6</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/TinyMCE-Integration">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/tinymce6-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="web" data-tags="api json http">
+        <div class="cat">REST &amp; web</div>
+        <h3>REST Annotations</h3>
+        <p>Build REST APIs from annotated resource classes, with JSON support.</p>
+        <div class="artifact"><span>wicketstuff-restannotations</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/Wicket-REST-annotations">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/wicketstuff-restannotations-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="dev" data-tags="model typesafe">
+        <div class="cat">Developer tools</div>
+        <h3>LazyModel</h3>
+        <p>Compile-time type-safe models, without property expression strings.</p>
+        <div class="artifact"><span>wicketstuff-lazymodel</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/LazyModel">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/wicketstuff-lazymodel">Source</a></div>
+      </article>
+      <article class="module" data-cat="infra" data-tags="serialization performance">
+        <div class="cat">Runtime</div>
+        <h3>Kryo Serializer</h3>
+        <p>A fast ISerializer for page storage, based on Kryo.</p>
+        <div class="artifact"><span>wicketstuff-serializer-kryo2</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/Kryo-Serializer">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/serializer-kryo2">Source</a></div>
+      </article>
+      <article class="module" data-cat="ui" data-tags="misc">
+        <div class="cat">Components</div>
+        <h3>Minis</h3>
+        <p>Assorted small components and behaviors that are too small to warrant a project of their own.</p>
+        <div class="artifact"><span>wicketstuff-minis</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/Minis">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/minis-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="js" data-tags="maps gis osm openstreetmap">
+        <div class="cat">JavaScript libraries</div>
+        <h3>OpenLayers</h3>
+        <p>Interactive maps with OpenLayers: OpenStreetMap, Bing, WMS and other tile sources, with optional Wicket Bootstrap components.</p>
+        <div class="artifact"><span>wicketstuff-openlayers3</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/OpenLayers">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/openlayers3-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="js" data-tags="dropdown choice tags">
+        <div class="cat">JavaScript libraries</div>
+        <h3>Selectize</h3>
+        <p>Tag-style and searchable selections with selectize.js.</p>
+        <div class="artifact"><span>wicketstuff-selectize</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/tree/master/wicketstuff-selectize-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="js" data-tags="tags">
+        <div class="cat">JavaScript libraries</div>
+        <h3>Tag-it Autocomplete</h3>
+        <p>Tag input with autocompletion, based on jquery.tagit.</p>
+        <div class="artifact"><span>wicketstuff-autocomplete-tagit</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/Autocomplete-TagIt">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/autocomplete-tagit-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="js" data-tags="image gallery">
+        <div class="cat">JavaScript libraries</div>
+        <h3>Lightbox2</h3>
+        <p>Show images in an overlay with the Lightbox2 plugin.</p>
+        <div class="artifact"><span>lightbox2</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/Lightbox2-Plugin-Integration">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/lightbox2-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="js" data-tags="copy">
+        <div class="cat">JavaScript libraries</div>
+        <h3>Clipboard.js</h3>
+        <p>Copy-to-clipboard buttons, powered by clipboard.js.</p>
+        <div class="artifact"><span>wicketstuff-clipboardjs</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/tree/master/wicketstuff-clipboard-js-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="js" data-tags="chart graph gchart">
+        <div class="cat">JavaScript libraries</div>
+        <h3>Google Charts</h3>
+        <p>Google Charts through the loader API, mixing Java, JavaScript and JSON transparently.</p>
+        <div class="artifact"><span>wicket-gchart</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/GoogleCharts-Loader-API">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/gchart-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="js" data-tags="maps google">
+        <div class="cat">JavaScript libraries</div>
+        <h3>GMap3</h3>
+        <p>Google Maps v3 as a Wicket component: markers, overlays and events.</p>
+        <div class="artifact"><span>wicketstuff-gmap3</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/Gmap3">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/gmap3-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="js" data-tags="css responsive">
+        <div class="cat">JavaScript libraries</div>
+        <h3>Foundation</h3>
+        <p>Integration of the Zurb Foundation front-end framework.</p>
+        <div class="artifact"><span>org.wicketstuff.foundation:wicket-foundation-core</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/tree/master/wicket-foundation">Source</a></div>
+      </article>
+      <article class="module" data-cat="js" data-tags="social x">
+        <div class="cat">JavaScript libraries</div>
+        <h3>Twitter</h3>
+        <p>Components and behaviors for the Twitter widgets, such as Tweet and Follow buttons.</p>
+        <div class="artifact"><span>wicketstuff-twitter</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/Twitter">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/twitter-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="ui" data-tags="dialog popup">
+        <div class="cat">Components</div>
+        <h3>ModalX</h3>
+        <p>Builds on Wicket&#x27;s ModalDialog with managed modal forms, message boxes and close listeners.</p>
+        <div class="artifact"><span>modalx</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/ModalX">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/modalx-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="ui" data-tags="task background">
+        <div class="cat">Components</div>
+        <h3>Progressbar</h3>
+        <p>Ajax progress bar for long-running background tasks, with a pluggable task service.</p>
+        <div class="artifact"><span>wicketstuff-progressbar</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/Progressbar">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/progressbar-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="ui" data-tags="background progress">
+        <div class="cat">Components</div>
+        <h3>Async Tasks</h3>
+        <p>Start, cancel and follow background tasks from the UI without breaking serialization.</p>
+        <div class="artifact"><span>async-task-impl</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/Async-tasks">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/async-tasks-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="ui" data-tags="repeater listview scroll">
+        <div class="cat">Components</div>
+        <h3>QuickView</h3>
+        <p>Repeaters that add items without re-rendering the whole list: partial updates and infinite scroll.</p>
+        <div class="artifact"><span>quickview</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/quickview">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/quickview-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="ui" data-tags="widgets portal">
+        <div class="cat">Components</div>
+        <h3>Dashboard</h3>
+        <p>A simple web dashboard built from pluggable widgets.</p>
+        <div class="artifact"><span>wicketstuff-dashboard-core</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/tree/master/dashboard-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="ui" data-tags="autocomplete">
+        <div class="cat">Components</div>
+        <h3>Object AutoComplete</h3>
+        <p>Select entities through an autocompleting text field.</p>
+        <div class="artifact"><span>wicketstuff-objectautocomplete</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/ObjectAutoComplete">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/objectautocomplete-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="ui" data-tags="keyboard shortcut hotkey">
+        <div class="cat">Components</div>
+        <h3>Input Events</h3>
+        <p>Bind key presses and other input events to components, for keyboard shortcuts.</p>
+        <div class="artifact"><span>wicketstuff-input-events</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/InputEvents">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/input-events-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="ui" data-tags="hash bookmark ajax">
+        <div class="cat">Components</div>
+        <h3>URL Fragment</h3>
+        <p>Read and write URL fragment parameters to build bookmarkable Ajax features. MIT licensed.</p>
+        <div class="artifact"><span>wicketstuff-urlfragment</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/UrlFragment">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/urlfragment-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="ui" data-tags="media video">
+        <div class="cat">Components</div>
+        <h3>HTML5</h3>
+        <p>Simple components and behaviors for HTML5 features.</p>
+        <div class="artifact"><span>wicketstuff-html5</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/Html5">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/wicket-html5-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="ui" data-tags="service worker pwa">
+        <div class="cat">Components</div>
+        <h3>Offline Mode</h3>
+        <p>Cache pages and resources with a service worker so your application keeps working offline.</p>
+        <div class="artifact"><span>wicketstuff-offline-mode</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/tree/master/offline-mode-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="data" data-tags="table crud">
+        <div class="cat">Data &amp; reporting</div>
+        <h3>Editable Grid</h3>
+        <p>A data grid with adding, editing and deleting of rows built in.</p>
+        <div class="artifact"><span>wicketstuff-editable-grid</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/Editable-Grid">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/editable-grid-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="data" data-tags="pdf report">
+        <div class="cat">Data &amp; reporting</div>
+        <h3>JasperReports</h3>
+        <p>Serve JasperReports as PDF, HTML, Excel and other formats.</p>
+        <div class="artifact"><span>wicketstuff-jasperreports</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/JasperReports">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/jasperreports-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="data" data-tags="excel xls export">
+        <div class="cat">Data &amp; reporting</div>
+        <h3>Apache POI</h3>
+        <p>Export Wicket data tables to Excel with Apache POI.</p>
+        <div class="artifact"><span>wicketstuff-poi</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/POI">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/wicket-poi-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="data" data-tags="jmx monitoring">
+        <div class="cat">Data &amp; reporting</div>
+        <h3>MBeanView</h3>
+        <p>A JMX panel to view and operate your application&#x27;s MBeans.</p>
+        <div class="artifact"><span>wicketstuff-mbeanview</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/MBeanView">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/mbeanview-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="security" data-tags="wasp swarm hive auth">
+        <div class="cat">Security</div>
+        <h3>Wicket Security</h3>
+        <p>Permission-based authorization: the WASP API and its SWARM implementation.</p>
+        <div class="artifact"><span>wicketstuff-security-swarm</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="wicketsecurity/">Archived docs</a><a href="https://github.com/wicketstuff/core/tree/master/wicket-security-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="security" data-tags="jaas login servlet3">
+        <div class="cat">Security</div>
+        <h3>Servlet Container Auth</h3>
+        <p>Use your servlet container&#x27;s authentication and roles in Wicket.</p>
+        <div class="artifact"><span>wicketstuff-servlet3-auth</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/Servlet-Container-Authentication-and-Authorization">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/wicket-servlet3-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="web" data-tags="api json http">
+        <div class="cat">REST &amp; web</div>
+        <h3>REST Lambda</h3>
+        <p>Define REST endpoints with Java lambdas.</p>
+        <div class="artifact"><span>wicketstuff-rest-lambda</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/tree/master/wicketstuff-rest-lambda">Source</a></div>
+      </article>
+      <article class="module" data-cat="web" data-tags="seo">
+        <div class="cat">REST &amp; web</div>
+        <h3>Sitemap XML</h3>
+        <p>Generate sitemap.xml files for search engines.</p>
+        <div class="artifact"><span>wicketstuff-sitemap-xml</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/SiteMapXML">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/sitemap-xml-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="web" data-tags="jsp jsf servlet">
+        <div class="cat">REST &amp; web</div>
+        <h3>JEE Web</h3>
+        <p>Embed servlet, JSP and JSF output in Wicket pages.</p>
+        <div class="artifact"><span>wicketstuff-jee-web</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/JEE-Web-Integration">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/jee-web-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="infra" data-tags="serialization performance">
+        <div class="cat">Runtime</div>
+        <h3>FST Serializer</h3>
+        <p>An ISerializer based on fast-serialization (FST) 2.</p>
+        <div class="artifact"><span>wicketstuff-serializer-fast2</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/FastSerializer2">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/serializer-fast2">Source</a></div>
+      </article>
+      <article class="module" data-cat="infra" data-tags="cdi ejb jakarta injection">
+        <div class="cat">Runtime</div>
+        <h3>Java EE Inject</h3>
+        <p>Inject @EJB, @Resource and @PersistenceUnit into Wicket components.</p>
+        <div class="artifact"><span>wicketstuff-javaee-inject</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/Java-EE-Inject">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/javaee-inject-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="infra" data-tags="spring injection">
+        <div class="cat">Runtime</div>
+        <h3>Spring Reference</h3>
+        <p>Spring bean references for when @SpringBean&#x27;s dynamic proxies are not an option.</p>
+        <div class="artifact"><span>wicketstuff-springreference</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/SpringReference">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/wicketstuff-springreference-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="infra" data-tags="bundle">
+        <div class="cat">Runtime</div>
+        <h3>OSGi</h3>
+        <p>Run Wicket applications in an OSGi container and inject OSGi services.</p>
+        <div class="artifact"><span>wicketstuff-osgi</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/Osgi">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/wicket-osgi-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="infra" data-tags="logging">
+        <div class="cat">Runtime</div>
+        <h3>Logback</h3>
+        <p>Helpers for using Logback with Wicket: configuration listener and request-aware log patterns.</p>
+        <div class="artifact"><span>wicketstuff-logback</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/Logback">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/wicketstuff-logback-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="infra" data-tags="javascript minify compress">
+        <div class="cat">Runtime</div>
+        <h3>Closure Compiler</h3>
+        <p>Minify JavaScript resources with Google Closure Compiler.</p>
+        <div class="artifact"><span>wicketstuff-closure-compiler</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/tree/master/closure-compiler">Source</a></div>
+      </article>
+      <article class="module" data-cat="dev" data-tags="java8 functional">
+        <div class="cat">Developer tools</div>
+        <h3>Lambda Components</h3>
+        <p>Create components and behaviors from Java lambdas.</p>
+        <div class="artifact"><span>wicketstuff-lambda-components</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/tree/master/wicketstuff-lambda-components">Source</a></div>
+      </article>
+      <article class="module" data-cat="dev" data-tags="mount url">
+        <div class="cat">Developer tools</div>
+        <h3>Annotations</h3>
+        <p>Mount pages with annotations and class path scanning.</p>
+        <div class="artifact"><span>wicketstuff-annotation</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/Annotation">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/annotation">Source</a></div>
+      </article>
+      <article class="module" data-cat="dev" data-tags="mount url apt">
+        <div class="cat">Developer tools</div>
+        <h3>Wicket Mount</h3>
+        <p>An annotation processor that generates your page mounts at compile time.</p>
+        <div class="artifact"><span>wicket-mount</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/tree/master/wicket-mount-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="dev" data-tags="event bus">
+        <div class="cat">Developer tools</div>
+        <h3>Annotation Event Dispatcher</h3>
+        <p>Deliver Wicket events to annotated methods.</p>
+        <div class="artifact"><span>wicketstuff-annotationeventdispatcher</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/tree/master/annotationeventdispatcher-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="dev" data-tags="extension">
+        <div class="cat">Developer tools</div>
+        <h3>Plugin Framework</h3>
+        <p>Register plugins with your Wicket application.</p>
+        <div class="artifact"><span>wicketstuff-plugin</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/tree/master/plugin">Source</a></div>
+      </article>
+      <article class="module" data-cat="dev" data-tags="scala">
+        <div class="cat">Developer tools</div>
+        <h3>Scala Extensions</h3>
+        <p>Utilities, components and an archetype for writing Wicket applications in Scala.</p>
+        <div class="artifact"><span>org.wicketstuff.scala:wicketstuff-scala</span><button class="js-only" type="button">Copy</button></div>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/ScalaExtensions">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/scala-extensions-parent">Source</a></div>
+      </article>
+      <article class="module" data-cat="dev" data-tags="example demo sample">
+        <div class="cat">Developer tools</div>
+        <h3>Phonebook</h3>
+        <p>A complete CRUD example application with Spring and Hibernate. Not published as a dependency: build it from source.</p>
+        <div class="links"><a href="https://github.com/wicketstuff/core/wiki/Phonebook">Docs</a><a href="https://github.com/wicketstuff/core/tree/master/phonebook">Source</a></div>
+      </article>
+    </div>
+    <div class="more" id="module-more" hidden><button class="btn btn-ghost" type="button">Show all modules</button></div>
+    <p class="visually-hidden" id="module-status" role="status" aria-live="polite"></p>
+    <p class="empty" id="module-empty">No module matches that search. Try the <a href="https://github.com/wicketstuff/core">repository</a> or <a href="https://github.com/wicketstuff/core/wiki">wiki</a>.</p>
+  </div>
+</section>
+
+<section id="start">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">Get started</div>
+      <h2>Up and running in three steps</h2>
+      <p>Wicket Stuff modules are plain Maven artifacts. If your project builds with Maven or Gradle, you are ready.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <h3>Match your Wicket version</h3>
+        <p>Use the Wicket Stuff release with the same major version as Apache Wicket. Running Wicket 11? Use Wicket Stuff 11.x. See the <a href="#versions">version table</a>.</p>
+<pre><code>Wicket 11.x      →  Wicket Stuff 11.0.0
+Wicket 10.x LTS  →  Wicket Stuff 10.12.0</code></pre>
+      </div>
+      <div class="step">
+        <h3>Import the BOM</h3>
+        <p>The bill of materials manages the versions of all Wicket Stuff artifacts, so they always fit together.</p>
+<pre><code><span class="t-tag">&lt;dependencyManagement&gt;</span>
+  <span class="t-tag">&lt;dependencies&gt;</span>
+    <span class="t-tag">&lt;dependency&gt;</span>
+      <span class="t-tag">&lt;groupId&gt;</span>org.wicketstuff<span class="t-tag">&lt;/groupId&gt;</span>
+      <span class="t-tag">&lt;artifactId&gt;</span>wicketstuff-bom<span class="t-tag">&lt;/artifactId&gt;</span>
+      <span class="t-tag">&lt;version&gt;</span><span class="t-str">11.0.0</span><span class="t-tag">&lt;/version&gt;</span>
+      <span class="t-tag">&lt;type&gt;</span>pom<span class="t-tag">&lt;/type&gt;</span>
+      <span class="t-tag">&lt;scope&gt;</span>import<span class="t-tag">&lt;/scope&gt;</span>
+    <span class="t-tag">&lt;/dependency&gt;</span>
+  <span class="t-tag">&lt;/dependencies&gt;</span>
+<span class="t-tag">&lt;/dependencyManagement&gt;</span></code></pre>
+      </div>
+      <div class="step">
+        <h3>Add the modules you need</h3>
+        <p>Copy an artifact id from the <a href="#modules">module list</a> and add it without a version. An id with a colon, like <code>org.wicketstuff.scala:wicketstuff-scala</code>, is <code>groupId:artifactId</code>. Javadoc JARs are published next to each artifact on Maven Central. Still on 9.x? There is no BOM: give each dependency version <code>9.25.0</code>.</p>
+<pre><code><span class="t-tag">&lt;dependency&gt;</span>
+  <span class="t-tag">&lt;groupId&gt;</span>org.wicketstuff<span class="t-tag">&lt;/groupId&gt;</span>
+  <span class="t-tag">&lt;artifactId&gt;</span>wicketstuff-shiro<span class="t-tag">&lt;/artifactId&gt;</span>
+<span class="t-tag">&lt;/dependency&gt;</span></code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="versions" class="alt">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">Versions</div>
+      <h2>Which release do I need?</h2>
+      <p>Each Wicket Stuff line follows an Apache Wicket major version and inherits its Java and servlet requirements. Apache Wicket publishes its own <a href="https://wicket.apache.org/versions/">support schedule</a>.</p>
+    </div>
+    <div class="table-wrap">
+      <table class="versions">
+        <thead>
+          <tr><th>Wicket Stuff</th><th>Apache Wicket</th><th>Java</th><th>Servlet API</th><th>BOM</th><th>Branch</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>11.0.0 <span class="badge badge-new">Latest</span></td>
+            <td>11.x</td>
+            <td>21+</td>
+            <td>Jakarta EE 11 (Servlet 6.1)</td>
+            <td>Yes</td>
+            <td><a href="https://github.com/wicketstuff/core/tree/wicket-11.x"><code>wicket-11.x</code></a></td>
+          </tr>
+          <tr>
+            <td>10.12.0 <span class="badge badge-lts">LTS</span></td>
+            <td>10.x</td>
+            <td>17+</td>
+            <td>Jakarta EE 10 (Servlet 6.0)</td>
+            <td>Yes</td>
+            <td><a href="https://github.com/wicketstuff/core/tree/wicket-10.x"><code>wicket-10.x</code></a></td>
+          </tr>
+          <tr>
+            <td>9.25.0 <span class="badge badge-maint">End of life</span></td>
+            <td>9.x</td>
+            <td>11+</td>
+            <td>Java EE (<code>javax.servlet</code> 3.1)</td>
+            <td>No, set versions per artifact</td>
+            <td><a href="https://github.com/wicketstuff/core/tree/wicket-9.x"><code>wicket-9.x</code></a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Apache Wicket 8 and 9 reached end of life on 29 October 2026 and get no more releases; 9.25.0 is the final Wicket Stuff 9.x release. Wicket 10 is the long-term support line until July 2027. Older releases for Wicket 8, 7, 6, 1.5 and 1.4 remain available on <a href="https://central.sonatype.com/namespace/org.wicketstuff">Maven Central</a>. Development of the next major happens on <code>master</code>. Release notes are on the <a href="https://github.com/wicketstuff/core/releases">GitHub releases page</a>.</p>
+  </div>
+</section>
+
+<section id="help">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">Help</div>
+      <h2>Stuck? Found a bug?</h2>
+      <p>Wicket Stuff is run by volunteers from the Wicket community. These are the places where they answer.</p>
+    </div>
+    <div class="help-grid">
+      <div class="panel">
+        <h3>Ask a question</h3>
+        <p>Places where Wicket Stuff users and committers answer questions.</p>
+        <ul class="linklist">
+          <li><a href="https://github.com/wicketstuff/core/discussions/categories/q-a"><span>GitHub Discussions<small>Questions and answers on GitHub</small></span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a href="https://wicket.apache.org/community/#lists"><span>Wicket users mailing list<small>users@wicket.apache.org</small></span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a href="https://github.com/wicketstuff/core/wiki"><span>Wicket Stuff wiki<small>Documentation for the individual projects</small></span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a href="https://stackoverflow.com/questions/tagged/wicketstuff"><span>Stack Overflow<small>Questions tagged <code>wicketstuff</code></small></span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a href="https://wicket.apache.org/learn/"><span>Learn Apache Wicket<small>User guide, books and examples for Wicket itself</small></span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a href="https://github.com/wicketstuff/core/security/advisories/new"><span>Security issue in a Wicket Stuff module?<small>Report it privately through GitHub</small></span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a href="https://wicket.apache.org/community/#security"><span>Security issue in Apache Wicket itself?<small>Report it privately to the Apache Wicket security team</small></span><span class="arrow" aria-hidden="true">→</span></a></li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>Report a bug</h3>
+        <p>Help us help you. A good report gets fixed much faster.</p>
+        <ol class="bug-steps">
+          <li>Reproduce the bug with the least amount of code.</li>
+          <li>Write a unit test or a <a href="https://wicket.apache.org/start/quickstart.html">quickstart</a> application that shows it.</li>
+          <li>Even better: fix it and open a pull request.</li>
+          <li>File the result in the right tracker: <a href="https://github.com/wicketstuff/core/issues">wicketstuff/core</a> for Wicket Stuff modules, <a href="https://github.com/apache/wicket/issues">apache/wicket</a> for Wicket itself.</li>
+        </ol>
+        <div class="actions">
+          <a class="btn btn-primary" href="https://github.com/wicketstuff/core/issues/new">Open an issue</a>
+          <a class="btn btn-ghost" href="https://github.com/wicketstuff/core/issues">View open issues</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contribute" class="flush-top">
+  <div class="wrap">
+    <div class="contribute">
+      <div>
+        <h2>Built something for Wicket? Bring it home.</h2>
+        <p>Wicket Stuff takes care of building, testing and releasing your project for every new Wicket version, so users can always find a version that fits.</p>
+        <p>Fix a bug, update a JavaScript library, add an example, or contribute an entire module. Pull requests are welcome.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="https://github.com/wicketstuff/core/pulls">View pull requests</a>
+          <a class="btn btn-ghost" href="https://github.com/wicketstuff/core">Star on GitHub</a>
+        </div>
+      </div>
+      <ul>
+        <li><a href="https://github.com/wicketstuff/core/wiki#how-to-contribute-a-new-project">Contribute a new project <span aria-hidden="true">→</span></a></li>
+        <li><a href="https://github.com/wicketstuff/core/wiki#gaining-commit-push-access">Get commit access <span aria-hidden="true">→</span></a></li>
+        <li><a href="https://github.com/wicketstuff/core/wiki#code-formatting">Code formatting &amp; conventions <span aria-hidden="true">→</span></a></li>
+        <li><a href="https://github.com/wicketstuff/core/wiki/Wicket-Stuff-Core-Release-Process">Release process <span aria-hidden="true">→</span></a></li>
+        <li><a href="https://github.com/wicketstuff/core/graphs/contributors">Meet the contributors <span aria-hidden="true">→</span></a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <a class="brand" href="./">
+        <img src="assets/favicon.svg" alt="" width="30" height="30">
+        Wicket Stuff
+      </a>
+      <p>&copy; Wicket Stuff committers. Wicket Stuff code is mostly licensed under the Apache License, Version 2.0. Integrations depend on third-party libraries and services with their own licenses and terms; check them before you ship.</p>
+      <p>Wicket Stuff is a community project and is not part of the Apache Software Foundation. Apache®, Apache Wicket, and the orange Wicket logo are either registered trademarks or trademarks of the Apache Software Foundation in the United States and/or other countries.</p>
+    </div>
+    <nav aria-label="Footer">
+      <a href="https://github.com/wicketstuff/core">GitHub</a>
+      <a href="https://github.com/wicketstuff/core/discussions">Discussions</a>
+      <a href="https://github.com/wicketstuff/core/wiki">Wiki</a>
+      <a href="https://github.com/wicketstuff/core/releases">Releases</a>
+      <a href="https://central.sonatype.com/namespace/org.wicketstuff">Maven Central</a>
+      <a href="https://wicket.apache.org">Apache Wicket</a>
+    </nav>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="assets/site.js"></script>
 </body>
 </html>

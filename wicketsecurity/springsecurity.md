@@ -1,3 +1,7 @@
+---
+layout: default
+title: Spring Security
+---
 Swarm and Spring Security HowTo
 ===============================
 
